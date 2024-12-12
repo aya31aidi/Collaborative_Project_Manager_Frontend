@@ -1,4 +1,3 @@
-<h1>HEllo</h1>
 <div class="container">
     <h2>Projects</h2>
     <table class="table table-bordered">
@@ -15,7 +14,16 @@
           <td>{{ project.id }}</td>
           <td>{{ project.name }}</td>
           <td>{{ project.description }}</td>
-          <td>{{ project.status }}</td>
+          <td>
+            <div *ngIf="project.teams && project.teams.length > 0; else noTeams">
+              <ul>
+                <li *ngFor="let team of project.teams">
+                  <a [routerLink]="['/teams', team.id]">{{ team.name }}</a>
+                </li>
+              </ul>
+            </div>
+            <ng-template #noTeams>No Teams</ng-template>
+          </td>
         </tr>
       </tbody>
     </table>
