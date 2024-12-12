@@ -4,13 +4,10 @@ import { OnInit } from '@angular/core';
 import { TeamsService } from '../teams.service';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
-import { RouterOutlet } from '@angular/router';
-import { RouterLink } from '@angular/router';
-import { RouterLinkActive } from '@angular/router';
 @Component({
   selector: 'app-teams',
   standalone: true,
-  imports: [CommonModule,HttpClientModule,RouterLink,],
+  imports: [CommonModule,HttpClientModule],
   templateUrl: './team-details.component.html',
   styleUrl: './team-details.component.css'
 })
