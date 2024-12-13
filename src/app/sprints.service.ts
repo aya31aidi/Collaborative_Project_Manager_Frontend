@@ -12,4 +12,7 @@ export class SprintService {
   getSprintById(sprintId: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${sprintId}`);
   }
+  updateTaskStatus(taskId: number, status: string): Observable<void> {
+    return this.http.put<void>(`http://localhost:8070/tasks/${taskId}/status`, { status });
+  }
 }

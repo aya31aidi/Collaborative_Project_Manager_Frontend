@@ -9,7 +9,7 @@ import { HttpClientModule } from '@angular/common/http';
   standalone: true,
   imports: [CommonModule,HttpClientModule],
   templateUrl: './team-details.component.html',
-  styleUrl: './team-details.component.css'
+  styleUrl: './team-details.component.css',
 })
 export class TeamDetailsComponent implements OnInit {
   teamId!: number;
@@ -34,4 +34,5 @@ export class TeamDetailsComponent implements OnInit {
       }
     );
   }
+
 }

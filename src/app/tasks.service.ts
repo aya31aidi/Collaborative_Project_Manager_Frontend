@@ -12,4 +12,7 @@ export class TasksService {
   getAllTasks(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
+  
+  
 }

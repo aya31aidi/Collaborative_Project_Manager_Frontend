@@ -1,33 +1,69 @@
-<div class="container mt-4">
-    <h2>Sprint Details</h2>
-    <div *ngIf="sprint">
-      <h3>{{ sprint.name }}</h3>
-      <p><strong>Start Date:</strong> {{ sprint.startDate }}</p>
-      <p><strong>End Date:</strong> {{ sprint.endDate }}</p>
-  
-      <h4>Tasks</h4>
-      <table class="table table-bordered">
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Title</th>
-            <th>Description</th>
-            <th>Status</th>
-            <th>Priority</th>
-            <th>Assigned To</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let task of sprint.tasks">
-            <td>{{ task.id }}</td>
-            <td>{{ task.title }}</td>
-            <td>{{ task.description }}</td>
-            <td>{{ task.status }}</td>
-            <td>{{ task.priority }}</td>
-            <td>{{ task.assignedTo.fullName }}</td>
-          </tr>
-        </tbody>
-      </table>
+<div class="container" *ngIf="sprintData">
+  <h2>{{ sprintData.name }}</h2>
+  <p><strong>Start Date:</strong> {{ sprintData.startDate }}</p>
+  <p><strong>End Date:</strong> {{ sprintData.endDate }}</p>
+  <p><strong>Description:</strong> {{ sprintData.description || 'No description available' }}</p>
+  <div class="kanban-container">
+    <div
+      class="kanban-column"
+      *ngFor="let column of kanbanColumns"
+      cdkDropList
+      [cdkDropListData]="getTasksForColumn(column.keyField)"
+      (cdkDropListDropped)="onTaskDropped($event)"
+      [id]="column.keyField" 
+      [cdkDropListConnectedTo]="connectedColumns" 
+    >
+      <h3>{{ column.headerText }}</h3>
+      <div
+        class="kanban-task"
+        *ngFor="let task of getTasksForColumn(column.keyField)"
+        cdkDrag
+        [cdkDragData]="task"
+      >
+        <h4>{{ task.title }}</h4>
+        <p>{{ task.description }}</p>
+        <p><strong>Priority:</strong> {{ task.priority }}</p>
+        <p><strong>Assigned To:</strong> {{ task.assignedTo.fullName }}</p>
+        <p><strong>Tags:</strong> {{ task.tagsList }}</p>
+      </div>
     </div>
   </div>
   
+</div>
+
+
+
+
+<!--<div class="container mt-4">
+  <h2>Sprint Details</h2>
+  <div *ngIf="sprint">
+    <h3>{{ sprint.name }}</h3>
+    <p><strong>Start Date:</strong> {{ sprint.startDate }}</p>
+    <p><strong>End Date:</strong> {{ sprint.endDate }}</p>
+
+    <h4>Tasks</h4>
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Title</th>
+          <th>Description</th>
+          <th>Status</th>
+          <th>Priority</th>
+          <th>Assigned To</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let task of sprint.tasks">
+          <td>{{ task.id }}</td>
+          <td>{{ task.title }}</td>
+          <td>{{ task.description }}</td>
+          <td>{{ task.status }}</td>
+          <td>{{ task.priority }}</td>
+          <td>{{ task.assignedTo.fullName }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+-->

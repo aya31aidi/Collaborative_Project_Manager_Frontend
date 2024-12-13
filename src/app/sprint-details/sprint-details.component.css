@@ -1,0 +1,69 @@
+.kanban-container {
+    display: flex;
+    gap: 16px;
+  }
+  
+  .kanban-column {
+    flex: 1;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: #f9f9f9;
+  }
+  
+  .kanban-task {
+    margin: 8px 0;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    background-color: #fff;
+    cursor: move;
+  }
+  
+  .kanban-task:hover {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  }
+  
+  .kanban-column.cdk-drop-list-dragging {
+    background-color: #e0e0e0;
+  }
+  .drop-zone {
+    background-color: rgba(0, 128, 0, 0.2);
+  }
+  
+  .kanban-column.cdk-drop-list-dragging {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  /* Style général pour les étiquettes de priorité */
+.priority-label {
+    display: inline-block;
+    padding: 5px 10px;
+    border-radius: 20px;
+    color: white;
+    font-weight: bold;
+  }
+  
+  /* Priorité basse (low) */
+  .priority-low {
+    background-color: #ffeb3b; /* Jaune clair */
+  }
+  
+  /* Priorité moyenne (medium) */
+  .priority-medium {
+    background-color: #ff9800; /* Orange clair */
+  }
+  
+  /* Priorité haute (high) */
+  .priority-high {
+    background-color: #f44336; /* Rouge clair */
+  }
+  
+  /* Vous pouvez aussi ajouter des styles supplémentaires pour les tâches, comme des bordures ou des ombres */
+  .kanban-task {
+    border: 1px solid #ccc;
+    margin-bottom: 10px;
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #f9f9f9;
+  }
+  

@@ -5,3 +5,5 @@
     color: blue; /* Exemple de style pour le lien actif */
   }
   
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
