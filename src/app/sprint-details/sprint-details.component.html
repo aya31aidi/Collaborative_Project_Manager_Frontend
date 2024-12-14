@@ -3,6 +3,10 @@
   <p><strong>Start Date:</strong> {{ sprintData.startDate }}</p>
   <p><strong>End Date:</strong> {{ sprintData.endDate }}</p>
   <p><strong>Description:</strong> {{ sprintData.description || 'No description available' }}</p>
+  <button class="add-task-btn" data-bs-toggle="modal" data-bs-target="#addTaskModal">
+    <i class="fas fa-plus"></i> Add Task
+  </button>
+  
   <div class="kanban-container">
     <div
       class="kanban-column"
@@ -10,8 +14,8 @@
       cdkDropList
       [cdkDropListData]="getTasksForColumn(column.keyField)"
       (cdkDropListDropped)="onTaskDropped($event)"
-      [id]="column.keyField" 
-      [cdkDropListConnectedTo]="connectedColumns" 
+      [id]="column.keyField"
+      [cdkDropListConnectedTo]="connectedColumns"
     >
       <h3>{{ column.headerText }}</h3>
       <div
@@ -22,48 +26,80 @@
       >
         <h4>{{ task.title }}</h4>
         <p>{{ task.description }}</p>
-        <p><strong>Priority:</strong> {{ task.priority }}</p>
+        <p>
+          <strong>Priority:</strong>
+          <button class="priority-btn"
+            [ngClass]="{
+              'priority-low': task.priority === 'LOW', 
+              'priority-medium': task.priority === 'MEDIUM', 
+              'priority-high': task.priority === 'HIGH'
+            }">
+            {{ task.priority || 'No Priority' }}
+          </button>
+        </p>
         <p><strong>Assigned To:</strong> {{ task.assignedTo.fullName }}</p>
-        <p><strong>Tags:</strong> {{ task.tagsList }}</p>
-      </div>
+        <p><strong>Tags:</strong> </p>
+        <div class="tags-container">
+          <button
+            class="tag-btn"
+            *ngFor="let tag of (task.tagsList || [])"
+          >
+            {{ tag }}
+          </button>
+        </div>
+        <div class="task-actions">
+          <!-- Icône Modifier -->
+          <button class="action-btn" (click)="editTask(task)">
+            <i class="fas fa-edit"></i>
+          </button>
+          <!-- Icône Joindre un Fichier -->
+          <button class="action-btn" (click)="attachFileToTask(task)">
+            <i class="fas fa-paperclip"></i>
+          </button>
+          <!-- Icône Supprimer -->
+          <button class="action-btn" (click)="deleteTask(task)">
+            <i class="fas fa-trash-alt"></i>
+          </button>
+        </div>
     </div>
+    
   </div>
   
 </div>
 
-
-
-
-<!--<div class="container mt-4">
-  <h2>Sprint Details</h2>
-  <div *ngIf="sprint">
-    <h3>{{ sprint.name }}</h3>
-    <p><strong>Start Date:</strong> {{ sprint.startDate }}</p>
-    <p><strong>End Date:</strong> {{ sprint.endDate }}</p>
-
-    <h4>Tasks</h4>
-    <table class="table table-bordered">
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Title</th>
-          <th>Description</th>
-          <th>Status</th>
-          <th>Priority</th>
-          <th>Assigned To</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let task of sprint.tasks">
-          <td>{{ task.id }}</td>
-          <td>{{ task.title }}</td>
-          <td>{{ task.description }}</td>
-          <td>{{ task.status }}</td>
-          <td>{{ task.priority }}</td>
-          <td>{{ task.assignedTo.fullName }}</td>
-        </tr>
-      </tbody>
-    </table>
+<!-- Modal -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" aria-labelledby="addTaskModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addTaskModalLabel">Add Task</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="addTaskForm" (ngSubmit)="onAddTaskSubmit()">
+          <div class="mb-3">
+            <label for="title" class="form-label">Task Title</label>
+            <input type="text" id="title" class="form-control" formControlName="title" required />
+          </div>
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" class="form-control" formControlName="description" rows="3"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="priority" class="form-label">Priority</label>
+            <select id="priority" class="form-select" formControlName="priority">
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="assignedTo" class="form-label">Assigned To</label>
+            <input type="text" id="assignedTo" class="form-control" formControlName="assignedTo" />
+          </div>
+          <button type="submit" class="btn btn-primary">Add Task</button>
+        </form>
+      </div>
+    </div>
   </div>
 </div>
--->

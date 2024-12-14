@@ -25,4 +25,26 @@ export class TasksComponent implements OnInit {
       this.tasks = data;
     });
   }
+  addTask(): void {
+    console.log('Add Task button clicked');
+    // Implémenter la logique d'ajout de tâche
+  }
+  
+  editTask(task: any): void {
+    console.log('Edit Task:', task);
+    // Implémenter la logique de modification de tâche
+  }
+  
+  attachFileToTask(task: any): void {
+    console.log('Attach file to Task:', task);
+    // Implémenter la logique de joindre un fichier
+  }
+  
+  deleteTask(task: any): void {
+    if (confirm(`Are you sure you want to delete the task "${task.title}"?`)) {
+      console.log('Delete Task:', task);
+      // Implémenter la logique de suppression de tâche
+    }
+  }
+  
 }

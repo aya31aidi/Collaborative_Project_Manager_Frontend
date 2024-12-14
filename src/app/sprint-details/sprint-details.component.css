@@ -1,69 +1,176 @@
-.kanban-container {
-    display: flex;
-    gap: 16px;
-  }
-  
-  .kanban-column {
-    flex: 1;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    background-color: #f9f9f9;
+    .kanban-column {
+    width: 30%;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f4f4f4;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    margin: 20px auto;
+    max-width: 1200px;
   }
   
   .kanban-task {
-    margin: 8px 0;
-    padding: 8px;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fff;
     border: 1px solid #ddd;
     border-radius: 4px;
-    background-color: #fff;
-    cursor: move;
   }
   
-  .kanban-task:hover {
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  h4 {
+    font-size: 18px;
+    margin-bottom: 5px;
   }
   
-  .kanban-column.cdk-drop-list-dragging {
-    background-color: #e0e0e0;
+  p {
+    font-size: 14px;
+    margin: 5px 0;
   }
-  .drop-zone {
-    background-color: rgba(0, 128, 0, 0.2);
+
+  
+  /* Container */
+  .container {
+    margin: 20px auto;
+    max-width: 1200px;
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .kanban-column.cdk-drop-list-dragging {
-    background-color: rgba(0, 0, 0, 0.1);
+  /* Header de colonne */
+  .column-header {
+    text-align: center;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: #3498db;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 10px;
   }
-  /* Style général pour les étiquettes de priorité */
-.priority-label {
-    display: inline-block;
+  
+  /* Tâches */
+  .kanban-task {
+    background-color: #ecf0f1;
+    border: 1px solid #bdc3c7;
+    border-radius: 5px;
+    padding: 10px;
+    margin: 10px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .kanban-task h4 {
+    font-size: 1.2em;
+    margin-bottom: 5px;
+  }
+  
+  /* Bouton de priorité */
+  .priority-btn {
     padding: 5px 10px;
+    font-size: 0.9em;
+    border: none;
     border-radius: 20px;
-    color: white;
+    cursor: pointer;
+    color: #ffffff;
     font-weight: bold;
   }
   
-  /* Priorité basse (low) */
   .priority-low {
-    background-color: #ffeb3b; /* Jaune clair */
+    background-color: #efe1a9; /* Light Yellow */
+    color: rgb(123, 121, 46);
   }
   
-  /* Priorité moyenne (medium) */
   .priority-medium {
-    background-color: #ff9800; /* Orange clair */
+    background-color: #ffbf58; /* Light Orange */
+    color: rgb(134, 94, 38);
   }
   
-  /* Priorité haute (high) */
   .priority-high {
-    background-color: #f44336; /* Rouge clair */
+    background-color: #f79b91; /* Light Red */
+    color: rgb(155, 82, 68);
   }
   
-  /* Vous pouvez aussi ajouter des styles supplémentaires pour les tâches, comme des bordures ou des ombres */
-  .kanban-task {
-    border: 1px solid #ccc;
-    margin-bottom: 10px;
-    border-radius: 5px;
-    padding: 10px;
-    background-color: #f9f9f9;
+  /* Additional optional styling for No Priority */
+  .priority-btn:empty {
+    background-color: #7f8c8d; /* Grey color for No Priority */
   }
-  
+  /* Réduction de la taille */
+.kanban-column {
+  width: calc(100% / 3); /* Pour 3 colonnes égales */
+  display: inline-block;
+  vertical-align: top;
+  padding: 10px;
+}
+
+.kanban-container {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.kanban-column h3 {
+  text-align: center;
+  font-size: 1.2rem;
+}
+/* Tags */
+.tags-container {
+  margin-top: 5px;
+}
+
+.tag-btn {
+  display: inline-block;
+  margin: 5px 5px 0 0;
+  background-color: #d9d0d0;
+  color: #0c0c0c;
+  border: none;
+  border-radius: 10px;
+  padding: 5px 10px;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.tag-btn:hover {
+  background-color: #9cbfda;
+}
+
+.task-actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.action-btn {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2em;
+  color: #6c757d;
+}
+
+.action-btn:hover {
+  color: #495057;
+}
+
+.add-task-container {
+  text-align: right;
+  margin: 20px 0;
+}
+
+.add-task-btn {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 1em;
+  border-radius: 5px;
+}
+
+.add-task-btn i {
+  margin-right: 5px;
+}
+
+.add-task-btn:hover {
+  background-color: #0056b3;
+}
