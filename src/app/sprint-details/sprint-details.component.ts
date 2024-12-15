@@ -14,6 +14,7 @@ import { ChangeDetectorRef } from '@angular/core';
 import { CapitalizePipe } from '../capitalize.pipe';
 import { NgClass } from '@angular/common';
 import { ReactiveFormsModule ,FormBuilder, FormGroup, Validators} from '@angular/forms';
+import { HttpHeaders,HttpClient } from '@angular/common/http';
 @Component({
   selector: 'app-sprint-details',
   standalone: true,
@@ -31,24 +32,28 @@ export class SprintDetailsComponent implements OnInit {
     { headerText: 'Done', keyField: 'DONE' }
   ];
   connectedColumns = ['TO_DO', 'IN_PROGRESS', 'DONE']; // Connecter toutes les colonnes
+  usersList: any[] = []; // Déclarer usersList ici
+  users: any[] = [];
+  tasks: any[] = [];
 
   constructor(private route: ActivatedRoute, private sprintService: SprintService,private cdr: ChangeDetectorRef,
      private tasksService: TasksService,
-     private fb: FormBuilder  // Add FormBuilder here
+     private fb: FormBuilder ,
+     private http: HttpClient // Add FormBuilder here
   ) {}
 
-     ngOnInit(): void {
-      const sprintId = Number(this.route.snapshot.paramMap.get('id'));
-      this.loadSprintData(sprintId);
-      
-      // Initialiser le formulaire pour ajouter une tâche
-      this.addTaskForm = this.fb.group({
-        title: ['', [Validators.required]],
-        description: ['', []],
-        priority: ['', [Validators.required]],
-        assignedTo: ['', []]
-      });
-    }
+  ngOnInit(): void {
+    const sprintId = Number(this.route.snapshot.paramMap.get('id'));
+    this.loadSprintData(sprintId);
+    this.loadUsers(); // Charger les utilisateurs pour le sprint
+    this.addTaskForm = this.fb.group({
+      title: ['', [Validators.required]],
+      description: ['', []],
+      priority: ['', [Validators.required]],
+      assignedTo: ['', []]
+    });
+  }
+  
 
   loadSprintData(sprintId: number): void {
     this.sprintService.getSprintById(sprintId).subscribe(
@@ -56,6 +61,8 @@ export class SprintDetailsComponent implements OnInit {
         this.sprintData = data;
         this.processTags();
         this.cdr.detectChanges(); // Force la détection des changements après le chargement des données
+        console.log('Loaded sprint tasks:', this.sprintData.tasks);
+
       },
       (error) => {
         console.error('Error fetching sprint data', error);
@@ -63,13 +70,13 @@ export class SprintDetailsComponent implements OnInit {
     );
   }
 
-
   processTags(): void {
     this.sprintData.tasks.forEach((task: any) => {
-      task.tagsList = task.tags.map((tag: any) => tag.name); // Garde un tableau des noms
-
+      // Vérifiez que task.tags existe et est un tableau avant d'utiliser map
+      task.tagsList = Array.isArray(task.tags) ? task.tags.map((tag: any) => tag.name) : [];
     });
   }
+  
 
   getTasksForColumn(status: string): any[] {
     return this.sprintData.tasks.filter((task: any) => task.status === status);
@@ -117,32 +124,92 @@ export class SprintDetailsComponent implements OnInit {
   }
   
   addTask(task: any): void {
-    this.tasksService.addTask(task).subscribe(
-      (newTask) => {
-        this.sprintData.tasks.push(newTask); // Ajouter la nouvelle tâche au tableau existant
-      },
-      (error) => {
-        console.error('Error adding task', error);
-      }
-    );
-  }
-  
-  onAddTaskSubmit(): void {
-    if (this.addTaskForm.valid) {
-      const taskData = this.addTaskForm.value; // Récupérer les données du formulaire
-      this.tasksService.addTask(taskData).subscribe(
+    const headers = new HttpHeaders().set('Content-Type', 'application/json');
+    this.http.post('http://localhost:8070/tasks', task, { headers })
+      .subscribe(
         (newTask) => {
-          this.sprintData.tasks.push(newTask); // Ajouter la tâche localement
-          this.addTaskForm.reset(); // Réinitialiser le formulaire
-          alert('Task added successfully!');
+          this.sprintData.tasks.push(newTask); // Ajout de la nouvelle tâche à la liste
+          console.log(newTask);
         },
         (error) => {
           console.error('Error adding task', error);
         }
       );
+  }
+  
+  
+  
+  
+  onAddTaskSubmit(): void {
+    if (this.addTaskForm.valid) {
+      const taskData = this.addTaskForm.value; // Récupérer les données du formulaire
+  
+      if (taskData) {  // Vérification pour s'assurer que taskData est défini
+        this.tasksService.addTask(taskData).subscribe(
+          (newTask) => {
+            this.sprintData.tasks.push(newTask); // Ajouter la tâche localement
+            this.addTaskForm.reset(); // Réinitialiser le formulaire
+            alert('Task added successfully!');
+          },
+          (error) => {
+            console.error('Error adding task', error);
+          }
+        );
+      } else {
+        console.error('taskData is undefined');
+        alert('Please fill in all required fields.');
+      }
     } else {
       alert('Please fill in all required fields.');
     }
   }
- 
+  
+  loadUsersFromProject(): void {
+    // Extract users from all teams involved in the project
+    const project = this.sprintData.project; // Assuming sprintData contains the project info
+
+    project.teams.forEach((team: any) => {
+      this.users = [...this.users, ...team.users]; // Collect users from each team
+    });
+  }
+  loadUsersForSprint(sprintId: number): void {
+    this.sprintService.getSprintById(sprintId).subscribe(
+      (data) => {
+        this.sprintData = data;
+        this.processTags();
+        this.usersList = this.getUsersFromTeams(data); // Récupérer les utilisateurs des équipes du projet
+        this.cdr.detectChanges();
+      },
+      (error) => {
+        console.error('Error fetching sprint data', error);
+      }
+    );
+  }
+  
+  // Nouvelle méthode pour charger les utilisateurs depuis l'API Spring Boot
+  loadUsers(): void {
+    const sprintId = Number(this.route.snapshot.paramMap.get('id'));
+    this.sprintService.getUsersForSprint(sprintId).subscribe(
+      (users) => {
+        this.usersList = users; // Mettre à jour la liste des utilisateurs
+        console.log('Users loaded:', this.usersList); // Ajoute un log pour vérifier les utilisateurs
+      },
+      (error) => {
+        console.error('Error fetching users', error);
+      }
+    );
+  }
+  
+  
+  
+  getUsersFromTeams(sprintData: any): any[] {
+    const users: any[] = [];  // `users` est aussi de type `any[]`
+    sprintData.project.teams.forEach((team: any) => {
+      team.users.forEach((user: any) => {
+        users.push(user);
+      });
+    });
+    return users;
+  }
+  
 }

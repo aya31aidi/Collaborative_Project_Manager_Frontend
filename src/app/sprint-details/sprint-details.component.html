@@ -37,7 +37,7 @@
             {{ task.priority || 'No Priority' }}
           </button>
         </p>
-        <p><strong>Assigned To:</strong> {{ task.assignedTo.fullName }}</p>
+        <p><strong>Assigned To:</strong> </p>
         <p><strong>Tags:</strong> </p>
         <div class="tags-container">
           <button
@@ -95,8 +95,14 @@
           </div>
           <div class="mb-3">
             <label for="assignedTo" class="form-label">Assigned To</label>
-            <input type="text" id="assignedTo" class="form-control" formControlName="assignedTo" />
+            <select id="assignedTo" class="form-select" formControlName="assignedTo">
+              <option *ngFor="let user of usersList" [value]="user.id">
+                {{ user.fullName }}
+              </option>
+            </select>
+            
           </div>
+          
           <button type="submit" class="btn btn-primary">Add Task</button>
         </form>
       </div>
