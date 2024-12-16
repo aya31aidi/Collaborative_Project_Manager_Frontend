@@ -37,7 +37,7 @@
             {{ task.priority || 'No Priority' }}
           </button>
         </p>
-        <p><strong>Assigned To:</strong> </p>
+        <p><strong>Assigned To:</strong> {{ task.assignedTo.fullName }}</p>
         <p><strong>Tags:</strong> </p>
         <div class="tags-container">
           <button
@@ -76,7 +76,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="addTaskForm" (ngSubmit)="onAddTaskSubmit()">
+        <form [formGroup]="addTaskForm" (ngSubmit)="onSubmit()">
           <div class="mb-3">
             <label for="title" class="form-label">Task Title</label>
             <input type="text" id="title" class="form-control" formControlName="title" required />
@@ -100,7 +100,6 @@
                 {{ user.fullName }}
               </option>
             </select>
-            
           </div>
           
           <button type="submit" class="btn btn-primary">Add Task</button>

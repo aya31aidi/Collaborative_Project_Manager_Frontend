@@ -15,6 +15,7 @@ import { CapitalizePipe } from '../capitalize.pipe';
 import { NgClass } from '@angular/common';
 import { ReactiveFormsModule ,FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { HttpHeaders,HttpClient } from '@angular/common/http';
+import { UserService } from '../users.service';
 @Component({
   selector: 'app-sprint-details',
   standalone: true,
@@ -60,8 +61,7 @@ export class SprintDetailsComponent implements OnInit {
       (data) => {
         this.sprintData = data;
         this.processTags();
-        this.cdr.detectChanges(); // Force la détection des changements après le chargement des données
-        console.log('Loaded sprint tasks:', this.sprintData.tasks);
+        this.cdr.detectChanges(); 
 
       },
       (error) => {
@@ -140,15 +140,22 @@ export class SprintDetailsComponent implements OnInit {
   
   
   
-  onAddTaskSubmit(): void {
+  /*onAddTaskSubmit(): void {
     if (this.addTaskForm.valid) {
-      const taskData = this.addTaskForm.value; // Récupérer les données du formulaire
+      const taskData = this.addTaskForm.value;
+      const assignedUser = this.usersList.find(user => user.id === taskData.assignedTo);
   
-      if (taskData) {  // Vérification pour s'assurer que taskData est défini
+      if (assignedUser) {
+        taskData.assignedTo = assignedUser; // Remplacer l'ID par l'objet complet de l'utilisateur
+      }
+  
+      console.log("Assigned User", assignedUser); // Vérifiez que l'objet est bien récupéré
+  
+      if (taskData) {
         this.tasksService.addTask(taskData).subscribe(
           (newTask) => {
-            this.sprintData.tasks.push(newTask); // Ajouter la tâche localement
-            this.addTaskForm.reset(); // Réinitialiser le formulaire
+            this.sprintData.tasks.push(newTask);
+            this.addTaskForm.reset();
             alert('Task added successfully!');
           },
           (error) => {
@@ -162,8 +169,21 @@ export class SprintDetailsComponent implements OnInit {
     } else {
       alert('Please fill in all required fields.');
     }
+  }*/
+  onSubmit(): void {
+    if (this.addTaskForm.valid) {
+      const formValue = this.addTaskForm.value;
+      // Formulaire avec ID de l'utilisateur
+      const taskData = {
+        ...formValue,
+        assignedTo: { id: formValue.assignedTo }  // Transformer l'ID en objet User avec { id: ... }
+      };
+      this.tasksService.addTask(taskData).subscribe(response => {
+        console.log('Tâche créée avec succès', response);
+      });
+    }
   }
-  
+
   loadUsersFromProject(): void {
     // Extract users from all teams involved in the project
     const project = this.sprintData.project; // Assuming sprintData contains the project info
@@ -186,19 +206,26 @@ export class SprintDetailsComponent implements OnInit {
     );
   }
   
-  // Nouvelle méthode pour charger les utilisateurs depuis l'API Spring Boot
   loadUsers(): void {
     const sprintId = Number(this.route.snapshot.paramMap.get('id'));
     this.sprintService.getUsersForSprint(sprintId).subscribe(
       (users) => {
-        this.usersList = users; // Mettre à jour la liste des utilisateurs
-        console.log('Users loaded:', this.usersList); // Ajoute un log pour vérifier les utilisateurs
+        // Supprimez les doublons basés sur l'ID
+        this.usersList = users.filter(
+          (user, index, self) =>
+            index === self.findIndex((u) => u.id === user.id)
+        );
+        if (!this.usersList || this.usersList.length === 0) {
+          console.error('No users found for this sprint!');
+        }
       },
       (error) => {
         console.error('Error fetching users', error);
       }
     );
   }
+  
+  
   
   
   
