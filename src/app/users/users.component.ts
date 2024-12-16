@@ -3,10 +3,11 @@ import { UserService } from '../users.service';
 import { OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClientModule } from '@angular/common/http';
+import { RouterLink } from '@angular/router';
 @Component({
   selector: 'app-users',
   standalone: true,
-  imports: [CommonModule,HttpClientModule],
+  imports: [CommonModule,HttpClientModule,RouterLink],
   templateUrl: './users.component.html',
   styleUrl: './users.component.css'
 })

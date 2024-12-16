@@ -5,6 +5,7 @@ import { TeamDetailsComponent } from './team-details/team-details.component';
 import { UsersComponent } from './users/users.component';
 import { TasksComponent } from './tasks/tasks.component';
 import { SprintDetailsComponent } from './sprint-details/sprint-details.component';
+import { AddUserComponent } from './add-user/add-user.component';
 export const routes: Routes = [
     { path: 'projects', component: ProjectsComponent ,pathMatch: 'full'},
     { path: 'users', component: UsersComponent },
@@ -12,4 +13,5 @@ export const routes: Routes = [
     { path: 'teams/:id', component: TeamDetailsComponent },
     { path: 'tasks', component: TasksComponent },
     { path: 'sprints/:id', component: SprintDetailsComponent },
+    { path: 'add-user', component: AddUserComponent },
 ];
