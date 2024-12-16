@@ -16,6 +16,7 @@ import { NgClass } from '@angular/common';
 import { ReactiveFormsModule ,FormBuilder, FormGroup, Validators} from '@angular/forms';
 import { HttpHeaders,HttpClient } from '@angular/common/http';
 import { UserService } from '../users.service';
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 @Component({
   selector: 'app-sprint-details',
   standalone: true,
@@ -40,7 +41,8 @@ export class SprintDetailsComponent implements OnInit {
   constructor(private route: ActivatedRoute, private sprintService: SprintService,private cdr: ChangeDetectorRef,
      private tasksService: TasksService,
      private fb: FormBuilder ,
-     private http: HttpClient // Add FormBuilder here
+     private http: HttpClient ,
+     private modalService: NgbModal
   ) {}
 
   ngOnInit(): void {
@@ -51,7 +53,8 @@ export class SprintDetailsComponent implements OnInit {
       title: ['', [Validators.required]],
       description: ['', []],
       priority: ['', [Validators.required]],
-      assignedTo: ['', []]
+      assignedTo: ['', []],
+      status: ['', [Validators.required]] 
     });
   }
   
@@ -183,7 +186,10 @@ export class SprintDetailsComponent implements OnInit {
       });
     }
   }
-
+  onCancel() {
+    this.addTaskForm.reset(); // Réinitialiser le formulaire
+    this.modalService.dismissAll(); // Fermer le modal
+  }
   loadUsersFromProject(): void {
     // Extract users from all teams involved in the project
     const project = this.sprintData.project; // Assuming sprintData contains the project info

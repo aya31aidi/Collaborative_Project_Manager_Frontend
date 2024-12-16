@@ -92,6 +92,15 @@
               <option value="MEDIUM">Medium</option>
               <option value="HIGH">High</option>
             </select>
+            <div class="mb-3">
+              <label for="status" class="form-label">Status</label>
+              <select id="status" class="form-select" formControlName="status">
+                <option value="TO_DO">To Do</option>
+                <option value="IN_PROGRESS">In Progress</option>
+                <option value="DONE">Done</option>
+              </select>
+            </div>
+            
           </div>
           <div class="mb-3">
             <label for="assignedTo" class="form-label">Assigned To</label>
@@ -101,8 +110,10 @@
               </option>
             </select>
           </div>
-          
+          <!-- Champ caché pour l'ID du sprint -->
+  <input type="hidden" formControlName="sprintId" [value]="sprintData?.id" />
           <button type="submit" class="btn btn-primary">Add Task</button>
+          <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
         </form>
       </div>
     </div>
