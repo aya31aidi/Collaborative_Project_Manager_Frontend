@@ -100,10 +100,7 @@ export class SprintDetailsComponent implements OnInit {
   
     this.sprintService.updateTaskStatus(task.id, newStatus).subscribe(
       () => {
-        console.log('Task status updated successfully');
-        setTimeout(() => {
-          this.cdr.detectChanges();
-        }, 0);
+        console.log('Task status updated successfully')
 
       },
       
