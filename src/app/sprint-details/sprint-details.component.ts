@@ -46,15 +46,21 @@ export class SprintDetailsComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const sprintId = Number(this.route.snapshot.paramMap.get('id'));
-    this.loadSprintData(sprintId);
+    // Get sprintId from the route params
+    const sprintId = Number(this.route.snapshot.paramMap.get('id')); // Assuming 'id' is the route parameter
+    this.loadSprintData(sprintId); // Optional, for loading data based on sprintId
+
+    // Load other necessary data
     this.loadUsers(); // Charger les utilisateurs pour le sprint
+
+    // Initialize the form and set sprintId
     this.addTaskForm = this.fb.group({
       title: ['', [Validators.required]],
       description: ['', []],
       priority: ['', [Validators.required]],
       assignedTo: ['', []],
-      status: ['', [Validators.required]] 
+      status: ['', [Validators.required]],
+      sprintId: [sprintId, [Validators.required]], // Set the sprintId value here
     });
   }
   
@@ -173,19 +179,28 @@ export class SprintDetailsComponent implements OnInit {
       alert('Please fill in all required fields.');
     }
   }*/
-  onSubmit(): void {
-    if (this.addTaskForm.valid) {
-      const formValue = this.addTaskForm.value;
-      // Formulaire avec ID de l'utilisateur
-      const taskData = {
-        ...formValue,
-        assignedTo: { id: formValue.assignedTo }  // Transformer l'ID en objet User avec { id: ... }
-      };
-      this.tasksService.addTask(taskData).subscribe(response => {
-        console.log('Tâche créée avec succès', response);
-      });
+    onSubmit(): void {
+      if (this.addTaskForm.valid) {
+        const formValue = this.addTaskForm.value;
+        const taskData = {
+          ...formValue,
+          assignedTo: { id: formValue.assignedTo },
+          sprint: { id: formValue.sprintId }, // Include sprintId properly
+        };
+    
+        console.log("Sprint ID:", taskData.sprint.id);
+        this.tasksService.addTask(taskData).subscribe(
+          response => {
+            console.log('Task created successfully', response);
+          },
+          error => {
+            console.error('Error creating task', error);
+          }
+        );
+      }
     }
-  }
+    
+    
   onCancel() {
     this.addTaskForm.reset(); // Réinitialiser le formulaire
     this.modalService.dismissAll(); // Fermer le modal
