@@ -17,6 +17,7 @@ import { ReactiveFormsModule ,FormBuilder, FormGroup, Validators} from '@angular
 import { HttpHeaders,HttpClient } from '@angular/common/http';
 import { UserService } from '../users.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
+import { FormArray } from '@angular/forms';
 @Component({
   selector: 'app-sprint-details',
   standalone: true,
@@ -61,7 +62,19 @@ export class SprintDetailsComponent implements OnInit {
       assignedTo: ['', []],
       status: ['', [Validators.required]],
       sprintId: [sprintId, [Validators.required]], // Set the sprintId value here
+      tags: this.fb.array([])
     });
+  }
+  get tags() {
+    return this.addTaskForm.get('tags') as FormArray;
+  }
+  
+  addTag(): void {
+    this.tags.push(this.fb.control('')); // Add an empty string for the tag input
+  }
+  
+  removeTag(index: number): void {
+    this.tags.removeAt(index); // Remove tag at the specified index
   }
   
 
@@ -179,16 +192,24 @@ export class SprintDetailsComponent implements OnInit {
     onSubmit(): void {
       if (this.addTaskForm.valid) {
         const formValue = this.addTaskForm.value;
+        const formattedTags = this.tags.controls.map(tagControl => {
+          return { name: tagControl.value, id: tagControl.value.id || null }; // Ensure it has an id or null
+        });
         const taskData = {
           ...formValue,
           assignedTo: { id: formValue.assignedTo },
-          sprint: { id: formValue.sprintId }, // Include sprintId properly
+          sprint: { id: formValue.sprintId }, 
+          tags: formattedTags
         };
     
-        console.log("Sprint ID:", taskData.sprint.id);
+        console.log("tags:", taskData.tags);
         this.tasksService.addTask(taskData).subscribe(
           response => {
             console.log('Task created successfully', response);
+            this.modalService.dismissAll();
+            console.log('taskData:', taskData);
+
+
           },
           error => {
             console.error('Error creating task', error);

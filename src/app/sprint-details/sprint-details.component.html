@@ -109,6 +109,15 @@
               </option>
             </select>
           </div>
+          <div formArrayName="tags">
+            <div *ngFor="let tag of tags.controls; let i = index">
+              <div class="input-group mb-2">
+                <input type="text" class="form-control" [formControlName]="i" placeholder="Tag" />
+                <button type="button" class="btn btn-danger" (click)="removeTag(i)">Remove</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary" (click)="addTag()">Add Tag</button>
+          </div>
           <!-- Champ caché pour l'ID du sprint -->
            <input type="hidden" formControlName="sprintId" [value]="sprintData?.id" />
            

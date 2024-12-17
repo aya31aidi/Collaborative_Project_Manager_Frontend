@@ -7,6 +7,9 @@ import { TasksComponent } from './tasks/tasks.component';
 import { SprintDetailsComponent } from './sprint-details/sprint-details.component';
 import { AddUserComponent } from './add-user/add-user.component';
 import { EditUserComponent } from './edit-user/edit-user.component';
+import { TagsComponent } from './tags/tags.component';
+import { AddTagComponent } from './add-tag/add-tag.component';
+import { EditTagComponent } from './edit-tag/edit-tag.component';
 export const routes: Routes = [
     { path: 'projects', component: ProjectsComponent ,pathMatch: 'full'},
     { path: 'users', component: UsersComponent },
@@ -16,4 +19,7 @@ export const routes: Routes = [
     { path: 'sprints/:id', component: SprintDetailsComponent },
     { path: 'add-user', component: AddUserComponent },
     { path: 'edit-user/:id', component: EditUserComponent },
+    { path: 'tags', component: TagsComponent }, 
+    { path: 'add-tag', component: AddTagComponent },
+    { path: 'edit-tag/:id', component: EditTagComponent }
 ];

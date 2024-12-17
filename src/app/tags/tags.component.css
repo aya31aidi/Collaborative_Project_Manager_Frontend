@@ -1,0 +1,115 @@
+/* Style global */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f7fa; /* Couleur de fond claire */
+    color: #333;
+    margin: 0;
+    padding: 0;
+  }
+  
+  .container {
+    width: 80%;
+    margin: 30px auto;
+    padding: 20px;
+    background-color: #ffffff; /* Fond de la zone de contenu */
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  h2 {
+    color: #004b6d; /* Couleur bleue douce */
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Bouton Add Tag */
+  .add-tag-button {
+    background-color: #28a745; /* Vert pour Ajouter */
+    color: white;
+    padding: 10px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
+  }
+  
+  .add-tag-button:hover {
+    background-color: #218838;
+  }
+  
+  /* Style pour la table des tags */
+  .tags-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  .tags-table th,
+  .tags-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+  }
+  
+  .tags-table th {
+    background-color: #f4f7fa;
+    color: #004b6d;
+  }
+  
+  .tags-table tr:nth-child(even) {
+    background-color: #fafafa;
+  }
+  
+  .tags-table tr:hover {
+    background-color: #f1f1f1;
+  }
+  
+  /* Style pour les boutons */
+  button, a.btn {
+    padding: 8px 16px;
+    font-size: 14px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 0 5px;
+    transition: all 0.3s ease;
+  }
+  
+  .btn-success {
+    background-color: #28a745; /* Vert */
+    color: white;
+  }
+  
+  .btn-success:hover {
+    background-color: #218838;
+  }
+  
+  .btn-warning {
+    background-color: #ffd08a; /* Orange */
+    color: white;
+  }
+  
+  .btn-warning:hover {
+    background-color: #e68900;
+  }
+  
+  .btn-danger {
+    background-color: #f38982; /* Rouge */
+    color: white;
+  }
+  
+  .btn-danger:hover {
+    background-color: #ec2f2b;
+  }
+  
+  /* Si aucun tag n'est trouvé */
+  p {
+    text-align: center;
+    color: #888;
+    font-style: italic;
+    font-size: 16px;
+    margin-top: 20px;
+  }
+  
