@@ -40,10 +40,19 @@ export class TasksComponent implements OnInit {
     // Implémenter la logique de joindre un fichier
   }
   
-  deleteTask(task: any): void {
-    if (confirm(`Are you sure you want to delete the task "${task.title}"?`)) {
-      console.log('Delete Task:', task);
-      // Implémenter la logique de suppression de tâche
+  deleteTask(taskId: number): void {
+    if (confirm('Are you sure you want to delete this task?')) {
+      this.taskService.deleteTask(taskId).subscribe(
+        () => {
+          // Retirer la tâche supprimée de la liste
+          this.tasks = this.tasks.filter(task => task.id !== taskId);
+          alert('Task deleted successfully!');
+        },
+        (error) => {
+          console.error('Error deleting task', error);
+          alert('Error deleting task');
+        }
+      );
     }
   }
   

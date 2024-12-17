@@ -25,5 +25,16 @@ export class TeamsService {
   getUsersByTeamId(teamId: number): Observable<any> {
     return this.http.get(`${this.apiUrl}/${teamId}/users`);
   }
+  deleteTeam(id: number): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/${id}`);
+  }
+
+ /* deleteUser(teamId:number ,userId: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/${teamId}/user/${userId}`);  // Adapter l'URL selon votre API
+  }*/
+    deleteUserFromTeam(teamId: number, userId: number): Observable<void> {
+      const url = `${this.apiUrl}/${teamId}/users/${userId}`;
+      return this.http.delete<void>(url);
+    }
   
 }

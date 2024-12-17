@@ -1,13 +1,13 @@
-<div class="container">
+<div class="container mt-4">
   <h2>Projects</h2>
-  <table class="table table-bordered">
+  <table class="table">
     <thead>
       <tr>
         <th>ID</th>
         <th>Title</th>
         <th>Description</th>
         <th>Teams</th>
-        <th>Sprints</th> <!-- New Sprints Column -->
+        <th>Sprints</th> <!-- Nouvelle colonne pour les Sprints -->
       </tr>
     </thead>
     <tbody>
@@ -19,7 +19,7 @@
           <div *ngIf="project.teams && project.teams.length > 0; else noTeams">
             <ul>
               <li *ngFor="let team of project.teams">
-                <a [routerLink]="['/teams', team.id]">{{ team.name }}</a>
+                <a [routerLink]="['/teams', team.id]" class="btn btn-primary btn-sm">{{ team.name }}</a>
               </li>
             </ul>
           </div>
@@ -29,7 +29,7 @@
           <div *ngIf="project.sprints && project.sprints.length > 0; else noSprints">
             <ul>
               <li *ngFor="let sprint of project.sprints">
-                <a [routerLink]="['/sprints', sprint.id]">{{ sprint.name }}</a>
+                <button [routerLink]="['/sprints', sprint.id]" class="btn btn-info btn-sm">{{ sprint.name }}</button>
               </li>
             </ul>
           </div>
