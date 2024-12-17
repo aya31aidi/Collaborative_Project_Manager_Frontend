@@ -19,4 +19,11 @@ export class TeamsService {
   getTeamById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
+  getProjectByTeamId(teamId: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8070/projects/team/${teamId}`);
+  }
+  getUsersByTeamId(teamId: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${teamId}/users`);
+  }
+  
 }
