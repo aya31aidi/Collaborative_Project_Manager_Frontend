@@ -1,7 +1,15 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-
+import { Team } from './teams.service';
+import { Sprint } from './sprints.service';
+export interface Project {
+  id: number;
+  name: string;
+  description: string;
+  team: Team;
+  sprints: Sprint[];
+}
 @Injectable({
   providedIn: 'root',
 })

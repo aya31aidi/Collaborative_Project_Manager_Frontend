@@ -75,7 +75,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form [formGroup]="addTaskForm" (ngSubmit)="onSubmit()">
+        <form *ngIf="addTaskForm" [formGroup]="addTaskForm" (ngSubmit)="onSubmit()">
           <div class="mb-3">
             <label for="title" class="form-label">Task Title</label>
             <input type="text" id="title" class="form-control" formControlName="title" required />

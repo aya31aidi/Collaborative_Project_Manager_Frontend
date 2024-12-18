@@ -18,6 +18,7 @@ import { HttpHeaders,HttpClient } from '@angular/common/http';
 import { UserService } from '../users.service';
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap';
 import { FormArray } from '@angular/forms';
+import { TagsService } from '../tags.service';
 @Component({
   selector: 'app-sprint-details',
   standalone: true,
@@ -43,7 +44,8 @@ export class SprintDetailsComponent implements OnInit {
      private tasksService: TasksService,
      private fb: FormBuilder ,
      private http: HttpClient ,
-     private modalService: NgbModal
+     private modalService: NgbModal,
+     private tagsService :TagsService
   ) {}
 
   ngOnInit(): void {
@@ -66,8 +68,9 @@ export class SprintDetailsComponent implements OnInit {
     });
   }
   get tags() {
-    return this.addTaskForm.get('tags') as FormArray;
+    return this.addTaskForm?.get('tags') as FormArray;
   }
+  
   
   addTag(): void {
     this.tags.push(this.fb.control('')); // Add an empty string for the tag input
@@ -93,11 +96,24 @@ export class SprintDetailsComponent implements OnInit {
   }
 
   processTags(): void {
-    this.sprintData.tasks.forEach((task: any) => {
-      // Vérifiez que task.tags existe et est un tableau avant d'utiliser map
-      task.tagsList = Array.isArray(task.tags) ? task.tags.map((tag: any) => tag.name) : [];
-    });
+    if (this.sprintData && this.sprintData.tasks) {
+      this.sprintData.tasks.forEach((task: any) => {
+        this.tasksService.getTagsByTaskId(task.id).subscribe(
+          (tags) => {
+            task.tagsList = tags ? tags.map((tag: any) => tag.name) : [];
+            this.cdr.detectChanges(); 
+          },
+          (error) => {
+            console.error(`Error fetching tags for task ${task.id}`, error);
+            task.tagsList = []; 
+          }
+        );
+      });
+    } else {
+      console.error('No tasks found in sprintData');
+    }
   }
+  
   
 
   getTasksForColumn(status: string): any[] {
@@ -144,7 +160,7 @@ export class SprintDetailsComponent implements OnInit {
   
   addTask(task: any): void {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
-    this.http.post('http://localhost:8070/tasks', task, { headers })
+   this.tasksService.addTask(task)
       .subscribe(
         (newTask) => {
           this.sprintData.tasks.push(newTask); // Ajout de la nouvelle tâche à la liste
@@ -156,62 +172,45 @@ export class SprintDetailsComponent implements OnInit {
       );
   }
   
-  
-  
-  
-  /*onAddTaskSubmit(): void {
-    if (this.addTaskForm.valid) {
-      const taskData = this.addTaskForm.value;
-      const assignedUser = this.usersList.find(user => user.id === taskData.assignedTo);
-  
-      if (assignedUser) {
-        taskData.assignedTo = assignedUser; // Remplacer l'ID par l'objet complet de l'utilisateur
-      }
-  
-      console.log("Assigned User", assignedUser); // Vérifiez que l'objet est bien récupéré
-  
-      if (taskData) {
-        this.tasksService.addTask(taskData).subscribe(
-          (newTask) => {
-            this.sprintData.tasks.push(newTask);
-            this.addTaskForm.reset();
-            alert('Task added successfully!');
-          },
-          (error) => {
-            console.error('Error adding task', error);
-          }
-        );
-      } else {
-        console.error('taskData is undefined');
-        alert('Please fill in all required fields.');
-      }
-    } else {
-      alert('Please fill in all required fields.');
-    }
-  }*/
     onSubmit(): void {
-      if (this.addTaskForm.valid) {
+      if (this.addTaskForm.valid ) {
         const formValue = this.addTaskForm.value;
-        const formattedTags = this.tags.controls.map(tagControl => {
-          return { name: tagControl.value, id: tagControl.value.id || null }; // Ensure it has an id or null
-        });
+        
+        // Formater les tags
+        const formattedTags = this.tags.controls.map(tagControl => tagControl.value);
+        
+        // Créer la tâche
         const taskData = {
           ...formValue,
           assignedTo: { id: formValue.assignedTo },
           sprint: { id: formValue.sprintId }, 
           tags: formattedTags
         };
-    
+        
         console.log("tags:", taskData.tags);
+    
+        // Ajouter la tâche au backend
         this.tasksService.addTask(taskData).subscribe(
-          response => {
-            console.log('Task created successfully', response);
-            this.modalService.dismissAll();
+          (newTask) => {
+            console.log('Task created successfully', newTask);
+            
+            // Ajouter les tags à la tâche
+            formattedTags.forEach((tagName: string) => {
+              const tagData = { name: tagName, taskId: newTask.id };
+              this.tagsService.addTag(tagData).subscribe(
+                () => {
+                  console.log('Tag added successfully:', tagName);
+                },
+                (error) => {
+                  console.error('Error adding tag:', tagName, error);
+                }
+              );
+            });
+            
+            this.modalService.dismissAll(); // Fermer le modal
             console.log('taskData:', taskData);
-
-
           },
-          error => {
+          (error) => {
             console.error('Error creating task', error);
           }
         );
@@ -263,10 +262,6 @@ export class SprintDetailsComponent implements OnInit {
       }
     );
   }
-  
-  
-  
-  
   
   getUsersFromTeams(sprintData: any): any[] {
     const users: any[] = [];  // `users` est aussi de type `any[]`

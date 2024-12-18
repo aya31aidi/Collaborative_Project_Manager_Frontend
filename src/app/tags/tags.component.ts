@@ -27,19 +27,6 @@ export class TagsComponent implements OnInit {
         console.log(tags);  
         this.tags = tags;
         this.isLoading = false;
-        this.tags.forEach(tag => {
-          if (tag.task && tag.task.id) {
-            this.tagsService.getTaskByTag(tag.task.id).subscribe(
-              (task) => {
-                console.log(task);  
-                tag.task = task; 
-              },
-              (error) => {
-                console.error('Erreur lors de la récupération de la tâche:', error);
-              }
-            );
-          }
-        });
       },
       (error) => {
         console.error('Erreur lors de la récupération des tags:', error);
@@ -47,7 +34,6 @@ export class TagsComponent implements OnInit {
       }
     );
   }
-  
   
   deleteTag(tagId: number): void {
     const confirmation = window.confirm('Are you sure you want to delete this tag?');

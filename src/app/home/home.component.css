@@ -1,4 +1,4 @@
-/* Section Hero */
+/* Section Hero 
 #hero {
     height: 100vh;
     background: url('') no-repeat center center;
@@ -24,7 +24,7 @@
     border-radius: 25px;
   }
   
-  /* Section des services */
+   
   #services {
     background-color: #f9f9f9;
   }
@@ -53,7 +53,7 @@
     margin-bottom: 10px;
   }
   
-  /* Section d'appel à l'action */
+
   #cta {
     background-color: #007bff;
     color: white;
@@ -70,4 +70,4 @@
     font-size: 1.2rem;
     border-radius: 25px;
   }
-  
+  */

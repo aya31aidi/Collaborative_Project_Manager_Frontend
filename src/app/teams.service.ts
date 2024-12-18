@@ -1,6 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { User } from './users.service';
+export interface Team {
+  id: number;
+  name: string;
+  users: User[];
+}
 @Injectable({
   providedIn: 'root'
 })

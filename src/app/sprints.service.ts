@@ -1,6 +1,16 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { Project } from './project.service';
+import { Task } from './tasks.service';
+export interface Sprint {
+  id: number;
+  name: string;
+  startDate: Date;
+  endDate: Date;
+  project: Project;
+  tasks: Task[];
+}
 @Injectable({
   providedIn: 'root'
 })

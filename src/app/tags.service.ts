@@ -2,6 +2,13 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { HttpParams } from '@angular/common/http';
+import { Task } from './tasks.service';
+export interface Tag{
+id:number;
+
+name : String; 
+ task :Task;
+}
 @Injectable({
   providedIn: 'root'
 })
