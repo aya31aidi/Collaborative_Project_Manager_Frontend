@@ -30,6 +30,8 @@ import { TagsService } from '../tags.service';
 export class SprintDetailsComponent implements OnInit {
   sprintData: any;
   addTaskForm!: FormGroup;
+  editTaskForm!: FormGroup;
+  selectedTask: any; 
   kanbanColumns = [
     { headerText: 'To Do', keyField: 'TO_DO' },
     { headerText: 'In Progress', keyField: 'IN_PROGRESS' },
@@ -59,13 +61,23 @@ export class SprintDetailsComponent implements OnInit {
     // Initialize the form and set sprintId
     this.addTaskForm = this.fb.group({
       title: ['', [Validators.required]],
-      description: ['', []],
-      priority: ['', [Validators.required]],
-      assignedTo: ['', []],
-      status: ['', [Validators.required]],
-      sprintId: [sprintId, [Validators.required]], // Set the sprintId value here
-      tags: this.fb.array([])
+      description: [''],
+      priority: [''],
+      assignedTo: [''],
+      tags: this.fb.array([])  // Initialisation correcte de l'array
     });
+  
+    this.editTaskForm = this.fb.group({
+      id: [''],  // Add id field here
+      title: ['', [Validators.required]],
+      description: [''],
+      priority: [''],
+      assignedTo: [''],
+      tags: this.fb.array([]),  // Initialize tags as an array
+    });
+    
+  
+    
   }
   get tags() {
     return this.addTaskForm?.get('tags') as FormArray;
@@ -142,8 +154,28 @@ export class SprintDetailsComponent implements OnInit {
   
   
   editTask(task: any): void {
-    console.log('Edit Task:', task);
-    // Implémenter la logique de modification de tâche
+    console.log('Editing task:', task); // Add this to check the task object
+    if (!this.editTaskForm) {
+      console.error('editTaskForm is not initialized');
+      return;
+    }
+  
+    this.selectedTask = task; // Store the selected task
+    this.editTaskForm.patchValue({
+      id: task.id,
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      assignedTo: task.assignedTo?.id,
+      tags: task.tagsList || []
+    });
+  
+    // Open the modal
+    const editTaskModal = document.getElementById('editTaskModal');
+    if (editTaskModal) {
+      editTaskModal.classList.add('show');
+      editTaskModal.style.display = 'block';
+    }
   }
   
   attachFileToTask(task: any): void {
@@ -153,10 +185,23 @@ export class SprintDetailsComponent implements OnInit {
   
   deleteTask(task: any): void {
     if (confirm(`Are you sure you want to delete the task "${task.title}"?`)) {
-      console.log('Delete Task:', task);
-      // Implémenter la logique de suppression de tâche
+      console.log('Deleting Task:', task);
+  
+      // Make the DELETE request to the backend
+      this.tasksService.deleteTask(task.id).subscribe(
+        (response) => {
+          console.log('Task and associated tags deleted successfully:', response);
+          // Remove the deleted task from the local tasks array
+          this.sprintData.tasks = this.sprintData.tasks.filter((t: any) => t.id !== task.id);
+        },
+        (error) => {
+          console.error('Error deleting task', error);
+        }
+      );
     }
   }
+  
+  
   
   addTask(task: any): void {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
@@ -272,5 +317,39 @@ export class SprintDetailsComponent implements OnInit {
     });
     return users;
   }
+ 
+
+// Close the edit modal
+closeEditTaskModal(): void {
+  const editTaskModal = document.getElementById('editTaskModal');
+  if (editTaskModal) {
+    editTaskModal.classList.remove('show');
+    editTaskModal.style.display = 'none';
+  }
+}
+
+// Submit the edited task
+onEditTaskSubmit(): void {
+  if (this.editTaskForm.valid) {
+    const updatedTask = this.editTaskForm.value;
+
+    this.tasksService.updateTask(updatedTask.id, updatedTask).subscribe({
+      next: (response) => {
+        // Update the task in the local list
+        const index = this.tasks.findIndex((task) => task.id === updatedTask.id);
+        if (index !== -1) {
+          this.tasks[index] = response;
+        }
+
+        // Close the modal
+        this.closeEditTaskModal();
+      },
+      error: (error) => {
+        console.error('Error updating task:', error);
+      }
+    });
+  }
+}
+
   
 }

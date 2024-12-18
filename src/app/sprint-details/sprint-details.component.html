@@ -41,7 +41,7 @@
         <div class="tags-container">
           <button
             class="tag-btn"
-            *ngFor="let tag of (task.tagsList || [])"
+            *ngFor="let tag of (task.tagsList || [] )"
           >
             {{ tag }}
           </button>
@@ -116,13 +116,68 @@
                 <button type="button" class="btn btn-danger" (click)="removeTag(i)">Remove</button>
               </div>
             </div>
-            <button type="button" class="btn btn-primary" (click)="addTag()">Add Tag</button>
+            <button type="button" class="btn btn-primary" (click)="addTag()">Add Tag</button><hr/>
           </div>
           <!-- Champ caché pour l'ID du sprint -->
            <input type="hidden" formControlName="sprintId" [value]="sprintData?.id" />
            
           <button type="submit" class="btn btn-primary">Add Task</button>
           <button type="button" class="btn btn-secondary" (click)="onCancel()">Cancel</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- Modal to edit a Task -->
+<!-- Edit Task Modal -->
+<div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="editTaskModalLabel">Edit Task</h5>
+        <button type="button" class="btn-close" (click)="closeEditTaskModal()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="editTaskForm" (ngSubmit)="onEditTaskSubmit()">
+          <input type="hidden" formControlName="id" />
+
+          <div class="mb-3">
+            <label for="editTitle" class="form-label">Task Title</label>
+            <input type="text" id="editTitle" class="form-control" formControlName="title" required />
+          </div>
+          <div class="mb-3">
+            <label for="editDescription" class="form-label">Description</label>
+            <textarea id="editDescription" class="form-control" formControlName="description"></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="editPriority" class="form-label">Priority</label>
+            <select id="editPriority" class="form-select" formControlName="priority">
+              <option value="LOW">Low</option>
+              <option value="MEDIUM">Medium</option>
+              <option value="HIGH">High</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="editAssignedTo" class="form-label">Assigned To</label>
+            <select id="editAssignedTo" class="form-select" formControlName="assignedTo">
+              <option *ngFor="let user of usersList" [value]="user.id">{{ user.fullName }}</option>
+            </select>
+          </div>
+          <div formArrayName="tags">
+            <label class="form-label">Tags:</label><br>
+            <div *ngFor="let tag of tags.controls; let i = index">
+              <div class="input-group mb-2">
+                <input type="text" class="form-control" [formControlName]="i" placeholder="Tag" />
+                <button type="button" class="btn btn-danger" (click)="removeTag(i)">Remove</button>
+              </div>
+            </div>
+            <button type="button" class="btn btn-primary" (click)="addTag()">Add Tag</button><hr/>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Update Task</button>
+          <button type="button" class="btn btn-secondary" (click)="closeEditTaskModal()">Cancel</button>
         </form>
       </div>
     </div>
