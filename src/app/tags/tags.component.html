@@ -3,7 +3,6 @@
   
     <button class="add-tag-button" routerLink="/add-tag">Add Tag</button>
   
-    <!-- Affichage de la liste des tags -->
     <div *ngIf="tags && tags.length > 0; else noTags">
       <table class="tags-table">
         <thead>
@@ -16,7 +15,7 @@
         <tbody>
           <tr *ngFor="let tag of tags">
             <td>{{ tag.name }}</td>
-            <td>{{ tag.task?.title || 'No Task Assigned' }}</td> <!-- Affichage du titre de la tâche -->
+            <td>{{ tag.task?.title || 'No Task Assigned' }}</td> 
             <td>
               <button [routerLink]="['/edit-tag', tag.id]" class="btn btn-warning">
                 Edit
@@ -29,8 +28,7 @@
         </tbody>
       </table>
     </div>
-  
-    <!-- Message lorsque la liste est vide -->
+
     <ng-template #noTags>
       <p>No tags found.</p>
     </ng-template>

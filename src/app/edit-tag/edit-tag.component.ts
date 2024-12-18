@@ -50,7 +50,7 @@ export class EditTagComponent implements OnInit {
 
   updateTag(): void {
     if (this.tag.name.trim() && this.tag.taskId) {
-      this.tagsService.updateTag(this.tag.id, this.tag).subscribe(
+      this.tagsService.updateTag(this.tag.id, this.tag, this.tag.taskId).subscribe(
         () => {
           alert('Tag updated successfully');
           this.router.navigate(['/tags']);
@@ -63,5 +63,7 @@ export class EditTagComponent implements OnInit {
     } else {
       alert('Please fill in all required fields.');
     }
-  }
+}
+
+  
 }

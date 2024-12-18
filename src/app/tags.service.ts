@@ -21,9 +21,12 @@ export class TagsService {
 
     return this.http.post<void>(this.apiUrl, null, { params });
   }
-  updateTag(id: number, tagData: any): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/${id}`, tagData);
+  updateTag(id: number, tag: any, taskId: number): Observable<any> {
+    const url = `http://localhost:8070/tags/${id}?taskId=${taskId}`; // Ajoutez taskId en tant que paramètre de requête
+    return this.http.put(url, tag);
   }
+  
+  
   deleteTag(tagId: number): Observable<void> {
     const url = `${this.apiUrl}/${tagId}`; 
     return this.http.delete<void>(url);
@@ -31,5 +34,9 @@ export class TagsService {
   getTagById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
-
+  getTaskByTag(taskId: number): Observable<any> {
+    return this.http.get<any>(`http://localhost:8070/tags/task/${taskId}`);
+  }
+  
+  
 }
