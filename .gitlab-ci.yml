@@ -40,27 +40,3 @@ deploy:
   image: node:18
   script:
     - echo "Déploiement sur votre serveur"
-
-
-
-"""stages:
-  - build
-  - test
-  - deploy
-
-build:
-  stage: build
-  script:
-    - npm install
-    - npm run build
-
-test:
-  stage: test
-  script:
-    - npm test
-
-deploy:
-  stage: deploy
-  script:
-    - docker build -t frontend-image .
-    - docker run -d -p 80:80 frontend-image"""
