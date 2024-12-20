@@ -47,9 +47,12 @@
           </button>
         </div>
         <div class="task-actions">
-          <!-- Icône Modifier -->
-          <button class="action-btn" (click)="editTask(task)">
+          <!-- Icône Modifier 
+          <button class="action-btn" (click)="editTask()" >
             <i class="fas fa-edit"></i>
+          </button>-->
+          <button class="add-task-btn" data-bs-toggle="modal" data-bs-target="#EditTaskModal">
+            <i class="fas fa-plus"></i> Edit Task
           </button>
           <!-- Icône Joindre un Fichier -->
           <button class="action-btn" (click)="attachFileToTask(task)">
@@ -109,7 +112,7 @@
               </option>
             </select>
           </div>
-          <div formArrayName="tags">
+          <div formArrayName="tags" *ngIf="tags">
             <div *ngFor="let tag of tags.controls; let i = index">
               <div class="input-group mb-2">
                 <input type="text" class="form-control" [formControlName]="i" placeholder="Tag" />
@@ -137,7 +140,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="editTaskModalLabel">Edit Task</h5>
-        <button type="button" class="btn-close" (click)="closeEditTaskModal()"></button>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
         <form [formGroup]="editTaskForm" (ngSubmit)="onEditTaskSubmit()">
@@ -165,7 +168,7 @@
               <option *ngFor="let user of usersList" [value]="user.id">{{ user.fullName }}</option>
             </select>
           </div>
-          <div formArrayName="tags">
+          <div formArrayName="tags" *ngIf="tags">
             <label class="form-label">Tags:</label><br>
             <div *ngFor="let tag of tags.controls; let i = index">
               <div class="input-group mb-2">
@@ -177,9 +180,10 @@
           </div>
 
           <button type="submit" class="btn btn-primary">Update Task</button>
-          <button type="button" class="btn btn-secondary" (click)="closeEditTaskModal()">Cancel</button>
+          <button type="button" class="btn btn-secondary" (click)="onCancelEdit()">Cancel</button>
         </form>
       </div>
     </div>
   </div>
 </div>
+

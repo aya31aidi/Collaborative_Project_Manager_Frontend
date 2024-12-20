@@ -21,4 +21,7 @@ export class ProjectService {
   getProjects(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+  addProject(teamId: number, project: any): Observable<Project> {
+    return this.http.post<Project>(`${this.apiUrl}/${teamId}`, project);
+  }
 }

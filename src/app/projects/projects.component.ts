@@ -21,6 +21,7 @@ export class ProjectsComponent implements OnInit {
       this.projects = data;
     });
     console.log('Projects component loaded');
+    console.log(this.projects);
   }
   ngOnDestroy(): void {
     console.log('Projects component destroyed');

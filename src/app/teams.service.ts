@@ -42,5 +42,12 @@ export class TeamsService {
       const url = `${this.apiUrl}/${teamId}/users/${userId}`;
       return this.http.delete<void>(url);
     }
+    addUserToTeam(teamId: number, userId: number): Observable<any> {
+      const url = `${this.apiUrl}/${teamId}/addUser/${userId}`;
+      return this.http.post<any>(url, null);  // Assuming no body is needed, but you can modify it if required
+    }
   
+    createTeam(team: { name: string }): Observable<number> {
+      return this.http.post<number>(this.apiUrl, team);
+    }
 }

@@ -30,8 +30,7 @@ import { TagsService } from '../tags.service';
 export class SprintDetailsComponent implements OnInit {
   sprintData: any;
   addTaskForm!: FormGroup;
-  editTaskForm!: FormGroup;
-  selectedTask: any; 
+  editTaskForm!:FormGroup;
   kanbanColumns = [
     { headerText: 'To Do', keyField: 'TO_DO' },
     { headerText: 'In Progress', keyField: 'IN_PROGRESS' },
@@ -61,29 +60,80 @@ export class SprintDetailsComponent implements OnInit {
     // Initialize the form and set sprintId
     this.addTaskForm = this.fb.group({
       title: ['', [Validators.required]],
-      description: [''],
-      priority: [''],
-      assignedTo: [''],
-      tags: this.fb.array([])  // Initialisation correcte de l'array
+      description: ['', []],
+      priority: ['', [Validators.required]],
+      assignedTo: ['', []],
+      status: ['', [Validators.required]],
+      sprintId: [sprintId, [Validators.required]], // Set the sprintId value here
+      tags: this.fb.array([])
     });
-  
+
     this.editTaskForm = this.fb.group({
-      id: [''],  // Add id field here
       title: ['', [Validators.required]],
-      description: [''],
-      priority: [''],
-      assignedTo: [''],
-      tags: this.fb.array([]),  // Initialize tags as an array
+      description: ['', []],
+      priority: ['', [Validators.required]],
+      assignedTo: ['', []],
+      status: ['', [Validators.required]],
+      tags: this.fb.array([]),
     });
-    
-  
-    
   }
+  
   get tags() {
     return this.addTaskForm?.get('tags') as FormArray;
   }
+  get editTags() {
+    return this.editTaskForm.get('editTags') as FormArray;
+  }
   
-  
+  openEditModal(task: any, content: any): void {
+    this.editTaskForm.patchValue({
+      title: task.title,
+      description: task.description,
+      priority: task.priority,
+      assignedTo: task.assignedTo ? task.assignedTo.id : null,
+      status: task.status,
+    });
+
+    // Add existing tags to the form
+    const tagsArray = this.editTaskForm.get('editTags') as FormArray;
+    task.tagsList.forEach((tag: string) => {
+      tagsArray.push(this.fb.control(tag));
+    });
+    this.processTags(true);
+    this.modalService.open(content); // Open the modal
+  }
+  editTask(): void {
+    if (this.editTaskForm.valid) {
+      const formValue = this.editTaskForm.value;
+      const taskData = {
+        ...formValue,
+        assignedTo: { id: formValue.assignedTo },
+        tags: formValue.editTags.map((tag: string) => ({ name: tag })),
+      };
+
+      const taskId = this.sprintData.tasks.find(
+        (task: any) => task.title === formValue.title
+      ).id;
+
+      this.tasksService.updateTask(taskId, taskData).subscribe(
+        (updatedTask) => {
+          this.sprintData.tasks = this.sprintData.tasks.map((task: any) =>
+            task.id === taskId ? updatedTask : task
+          );
+          this.modalService.dismissAll(); // Close modal
+        },
+        (error) => {
+          console.error('Error updating task', error);
+        }
+      );
+    }
+  }
+
+  onCancelEdit() {
+    this.editTaskForm.reset();
+    this.modalService.dismissAll();
+  }
+
   addTag(): void {
     this.tags.push(this.fb.control('')); // Add an empty string for the tag input
   }
@@ -97,7 +147,7 @@ export class SprintDetailsComponent implements OnInit {
     this.sprintService.getSprintById(sprintId).subscribe(
       (data) => {
         this.sprintData = data;
-        this.processTags();
+        this.processTags(false);
         this.cdr.detectChanges(); 
 
       },
@@ -107,13 +157,22 @@ export class SprintDetailsComponent implements OnInit {
     );
   }
 
-  processTags(): void {
+  processTags(isEditMode: boolean): void {
     if (this.sprintData && this.sprintData.tasks) {
       this.sprintData.tasks.forEach((task: any) => {
         this.tasksService.getTagsByTaskId(task.id).subscribe(
           (tags) => {
             task.tagsList = tags ? tags.map((tag: any) => tag.name) : [];
-            this.cdr.detectChanges(); 
+            
+            if (isEditMode) {
+              // Si c'est en mode édition, ajouter les tags existants au formulaire d'édition
+              const tagsArray = this.editTaskForm.get('editTags') as FormArray;
+              task.tagsList.forEach((tag: string) => {
+                tagsArray.push(this.fb.control(tag));  // Ajouter les tags existants
+              });
+            }
+            
+            this.cdr.detectChanges();
           },
           (error) => {
             console.error(`Error fetching tags for task ${task.id}`, error);
@@ -126,8 +185,34 @@ export class SprintDetailsComponent implements OnInit {
     }
   }
   
+  /*closeEditTaskModal(): void {
+    // Si tu utilises Bootstrap modal :
+    const modalElement = document.getElementById('editTaskModal');
+    const modal = new bootstrap.Modal(modalElement!);
+    modal.hide();
+  }*/
   
-
+  onEditTaskSubmit(): void {
+    if (this.editTaskForm.valid) {
+      // Récupère les données du formulaire
+      const updatedTask = this.editTaskForm.value;
+      const taskId = updatedTask.id;
+      // Appelle un service pour mettre à jour la tâche (exemple)
+      this.tasksService.updateTask(taskId,updatedTask).subscribe(
+        (response) => {
+          // Ferme le modal après la mise à jour
+          //this.closeEditTaskModal();
+          // Mets à jour les tâches dans l'UI ou fais tout autre traitement nécessaire
+        },
+        (error) => {
+          console.error('Error updating task', error);
+        }
+      );
+    } else {
+      console.log('Form is not valid');
+    }
+  }
+  
   getTasksForColumn(status: string): any[] {
     return this.sprintData.tasks.filter((task: any) => task.status === status);
   }
@@ -153,30 +238,10 @@ export class SprintDetailsComponent implements OnInit {
   }
   
   
-  editTask(task: any): void {
-    console.log('Editing task:', task); // Add this to check the task object
-    if (!this.editTaskForm) {
-      console.error('editTaskForm is not initialized');
-      return;
-    }
-  
-    this.selectedTask = task; // Store the selected task
-    this.editTaskForm.patchValue({
-      id: task.id,
-      title: task.title,
-      description: task.description,
-      priority: task.priority,
-      assignedTo: task.assignedTo?.id,
-      tags: task.tagsList || []
-    });
-  
-    // Open the modal
-    const editTaskModal = document.getElementById('editTaskModal');
-    if (editTaskModal) {
-      editTaskModal.classList.add('show');
-      editTaskModal.style.display = 'block';
-    }
-  }
+  /*editTask(task: any): void {
+    console.log('Edit Task:', task);
+    // Implémenter la logique de modification de tâche
+  }*/
   
   attachFileToTask(task: any): void {
     console.log('Attach file to Task:', task);
@@ -185,23 +250,10 @@ export class SprintDetailsComponent implements OnInit {
   
   deleteTask(task: any): void {
     if (confirm(`Are you sure you want to delete the task "${task.title}"?`)) {
-      console.log('Deleting Task:', task);
-  
-      // Make the DELETE request to the backend
-      this.tasksService.deleteTask(task.id).subscribe(
-        (response) => {
-          console.log('Task and associated tags deleted successfully:', response);
-          // Remove the deleted task from the local tasks array
-          this.sprintData.tasks = this.sprintData.tasks.filter((t: any) => t.id !== task.id);
-        },
-        (error) => {
-          console.error('Error deleting task', error);
-        }
-      );
+      console.log('Delete Task:', task);
+      // Implémenter la logique de suppression de tâche
     }
   }
-  
-  
   
   addTask(task: any): void {
     const headers = new HttpHeaders().set('Content-Type', 'application/json');
@@ -279,7 +331,7 @@ export class SprintDetailsComponent implements OnInit {
     this.sprintService.getSprintById(sprintId).subscribe(
       (data) => {
         this.sprintData = data;
-        this.processTags();
+        this.processTags(false);
         this.usersList = this.getUsersFromTeams(data); // Récupérer les utilisateurs des équipes du projet
         this.cdr.detectChanges();
       },
@@ -293,7 +345,6 @@ export class SprintDetailsComponent implements OnInit {
     const sprintId = Number(this.route.snapshot.paramMap.get('id'));
     this.sprintService.getUsersForSprint(sprintId).subscribe(
       (users) => {
-        // Supprimez les doublons basés sur l'ID
         this.usersList = users.filter(
           (user, index, self) =>
             index === self.findIndex((u) => u.id === user.id)
@@ -317,39 +368,5 @@ export class SprintDetailsComponent implements OnInit {
     });
     return users;
   }
- 
-
-// Close the edit modal
-closeEditTaskModal(): void {
-  const editTaskModal = document.getElementById('editTaskModal');
-  if (editTaskModal) {
-    editTaskModal.classList.remove('show');
-    editTaskModal.style.display = 'none';
-  }
-}
-
-// Submit the edited task
-onEditTaskSubmit(): void {
-  if (this.editTaskForm.valid) {
-    const updatedTask = this.editTaskForm.value;
-
-    this.tasksService.updateTask(updatedTask.id, updatedTask).subscribe({
-      next: (response) => {
-        // Update the task in the local list
-        const index = this.tasks.findIndex((task) => task.id === updatedTask.id);
-        if (index !== -1) {
-          this.tasks[index] = response;
-        }
-
-        // Close the modal
-        this.closeEditTaskModal();
-      },
-      error: (error) => {
-        console.error('Error updating task:', error);
-      }
-    });
-  }
-}
-
   
 }

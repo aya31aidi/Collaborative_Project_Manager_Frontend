@@ -1,0 +1,97 @@
+<div class="container">
+  <h2>Add New Project</h2>
+  <form (ngSubmit)="addProject()">
+    <div class="form-group">
+      <label for="name">Project Name:</label>
+      <input
+        id="name"
+        type="text"
+        class="form-control"
+        [(ngModel)]="project.name"
+        name="name"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label for="description">Description:</label>
+      <textarea
+        id="description"
+        class="form-control"
+        [(ngModel)]="project.description"
+        name="description"
+        required
+      ></textarea>
+    </div>
+
+    <!-- Section pour ajouter une équipe -->
+    <div class="form-group">
+      <label for="teamName">Team Name:</label>
+      <input
+        id="teamName"
+        type="text"
+        class="form-control"
+        [(ngModel)]="teamName"
+        name="teamName"
+        required
+      />
+    </div>
+    <div class="form-group">
+      <label>Add Team Members:</label>
+      <div class="team-form">
+        <select [(ngModel)]="selectedUser" name="selectedUser" class="form-control">
+          <option value="" disabled selected>Select a user</option>
+          <option *ngFor="let user of users" [ngValue]="user">{{ user.fullName }}</option>
+        </select>
+        
+        <button type="button" class="btn btn-secondary" (click)="addUserToTeam()">
+          +
+        </button>
+      </div>
+    </div>
+
+    <!-- Liste des membres de l'équipe -->
+    <div class="team-list">
+      <ul>
+        <li *ngFor="let member of teamMembers">
+          {{ member.name }}
+          <button
+            type="button"
+            class="btn btn-danger btn-sm"
+            (click)="removeUserFromTeam(member)"
+          >
+            Remove
+          </button>
+        </li>
+      </ul>
+    </div>
+
+    <!--<button
+      type="button"
+      class="btn btn-success"
+      (click)="addProject()"
+    >
+      Add Team to Project
+    </button>-->
+
+    <!-- Liste des équipes ajoutées -->
+    <div class="team-list">
+      <h3>Teams</h3>
+      <ul>
+        <li *ngFor="let team of project.team">
+          <strong>{{ team.name }}</strong> - Members: {{ team.members.length }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="button-group">
+      <button type="submit" class="btn btn-primary add-btn" (click)="addProject()">Add Project</button>
+      <button
+        type="button"
+        class="btn btn-secondary cancel-btn"
+        routerLink="/projects"
+      >
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
