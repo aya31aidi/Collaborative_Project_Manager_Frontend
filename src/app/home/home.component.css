@@ -1,73 +1,75 @@
-/* Section Hero 
 #hero {
-    height: 100vh;
-    background: url('') no-repeat center center;
-    background-size: cover;
-    color: white;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-  }
-  
-  #hero h1 {
-    font-size: 3rem;
-    font-weight: bold;
-  }
-  
-  #hero p {
-    font-size: 1.2rem;
-  }
-  
-  #hero .btn {
-    font-size: 1.1rem;
-    padding: 10px 30px;
-    border-radius: 25px;
-  }
-  
-   
-  #services {
-    background-color: #f9f9f9;
-  }
-  
-  .service-box {
-    background-color: white;
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
-    transition: transform 0.3s ease-in-out;
-  }
-  
-  .service-box:hover {
-    transform: translateY(-10px);
-  }
-  
-  .service-box i {
-    font-size: 3rem;
-    color: #007bff;
-    margin-bottom: 15px;
-  }
-  
-  .service-box h3 {
-    font-size: 1.5rem;
-    margin-bottom: 10px;
-  }
-  
+  height: 100vh;
+  /*background: url('https://path/to/your/image.jpg') no-repeat center center;
+  background-size: cover;*/
+  color: white;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 
-  #cta {
-    background-color: #007bff;
-    color: white;
-    padding: 50px 0;
-  }
-  
-  #cta h2 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-  }
-  
-  #cta .btn {
-    padding: 10px 30px;
-    font-size: 1.2rem;
-    border-radius: 25px;
-  }
-  */
+#hero h1 {
+  font-size: 3rem;
+  font-weight: bold;
+}
+
+#hero p {
+  font-size: 1.5rem;
+}
+
+#hero .btn-group {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+}
+
+#hero .btn {
+  font-size: 1.5rem;
+  padding: 20px 40px;
+  border-radius: 25px;
+}
+
+#services {
+  background-color: #f9f9f9;
+}
+
+.service-box {
+  background-color: white;
+  padding: 40px; 
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 30px;
+  transition: transform 0.3s ease-in-out;
+}
+
+.service-box:hover {
+  transform: translateY(-10px);
+}
+
+.service-box i {
+  font-size: 4rem; 
+  color: #007bff;
+  margin-bottom: 15px;
+}
+
+.service-box h3 {
+  font-size: 1.8rem; 
+  margin-bottom: 10px;
+}
+
+#cta {
+  background-color: #007bff;
+  color: white;
+  padding: 50px 0;
+}
+
+#cta h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+#cta .btn {
+  padding: 15px 40px; 
+  font-size: 1.5rem; 
+  border-radius: 25px;
+}

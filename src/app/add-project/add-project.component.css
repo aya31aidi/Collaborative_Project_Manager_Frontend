@@ -25,7 +25,7 @@
     border-radius: 4px;
     background-color: #fafafa;
     transition: border-color 0.3s ease;
-    margin-bottom: 20px; /* Ajout d'un espace sous la select */
+    margin-bottom: 20px; 
   }
   
   button {
@@ -39,8 +39,7 @@
   button:hover {
     opacity: 0.9;
   }
-  
-  /* Style pour le bouton Add Tag */
+
   .add-btn {
     width: auto;
     background-color: #007bff;
@@ -51,8 +50,7 @@
   .add-btn:hover {
     background-color: #0056b3;
   }
-  
-  /* Style pour le bouton Cancel */
+
   .cancel-btn {
     width: auto;
     background-color: #6c757d;
@@ -63,7 +61,6 @@
     background-color: #5a6268;
   }
   
-  /* Groupement des boutons */
   .button-group {
     display: flex;
     justify-content: space-between;

@@ -12,6 +12,7 @@ import { AddTagComponent } from './add-tag/add-tag.component';
 import { EditTagComponent } from './edit-tag/edit-tag.component';
 import { AddProjectComponent } from './add-project/add-project.component';
 import { AddSprintComponent } from './add-sprint/add-sprint.component';
+import { HomeComponent } from './home/home.component';
 //import { HomeComponent } from './home/home.component';
 export const routes: Routes = [
     { path: 'projects', component: ProjectsComponent ,pathMatch: 'full'},
@@ -27,5 +28,5 @@ export const routes: Routes = [
     { path: 'edit-tag/:id', component: EditTagComponent },
     { path: 'add-project', component: AddProjectComponent },
     { path: 'add-sprint/:id', component: AddSprintComponent },
-   // { path: '/home', component: HomeComponent },
+    { path: 'home', component: HomeComponent },
 ];
