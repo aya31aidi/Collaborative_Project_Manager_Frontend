@@ -31,6 +31,8 @@
         <td>
           <!-- Bouton pour ajouter un sprint -->
           <button [routerLink]="['/add-sprint', project.id]" class="btn btn-success btn-sm">Add Sprint</button>
+          <button (click)="editProject(project.id)" class="btn btn-warning btn-sm ml-2">Edit</button>
+          <button (click)="deleteProject(project.id)" class="btn btn-danger btn-sm ml-2">Delete</button>
         </td>
       </tr>
     </tbody>

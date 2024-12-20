@@ -68,22 +68,24 @@ export class SprintDetailsComponent implements OnInit {
       tags: this.fb.array([])
     });
 
-    this.editTaskForm = this.fb.group({
+    /*this.editTaskForm = this.fb.group({
       title: ['', [Validators.required]],
       description: ['', []],
       priority: ['', [Validators.required]],
       assignedTo: ['', []],
       status: ['', [Validators.required]],
       tags: this.fb.array([]),
-    });
+    });*/
   }
   
   get tags() {
-    return this.addTaskForm?.get('tags') as FormArray;
+    return this.addTaskForm?.get('tags') as FormArray || new FormArray([]);
   }
-  get editTags() {
-    return this.editTaskForm.get('editTags') as FormArray;
+  
+  /*get editTags() {
+    return this.editTaskForm?.get('editTags') as FormArray || new FormArray([]);
   }
+  
   
   openEditModal(task: any, content: any): void {
     this.editTaskForm.patchValue({
@@ -133,7 +135,7 @@ export class SprintDetailsComponent implements OnInit {
     this.editTaskForm.reset();
     this.modalService.dismissAll();
   }
-
+*/
   addTag(): void {
     this.tags.push(this.fb.control('')); // Add an empty string for the tag input
   }
@@ -192,7 +194,7 @@ export class SprintDetailsComponent implements OnInit {
     modal.hide();
   }*/
   
-  onEditTaskSubmit(): void {
+  /*onEditTaskSubmit(): void {
     if (this.editTaskForm.valid) {
       // Récupère les données du formulaire
       const updatedTask = this.editTaskForm.value;
@@ -211,7 +213,7 @@ export class SprintDetailsComponent implements OnInit {
     } else {
       console.log('Form is not valid');
     }
-  }
+  }*/
   
   getTasksForColumn(status: string): any[] {
     return this.sprintData.tasks.filter((task: any) => task.status === status);
@@ -248,10 +250,20 @@ export class SprintDetailsComponent implements OnInit {
     // Implémenter la logique de joindre un fichier
   }
   
-  deleteTask(task: any): void {
-    if (confirm(`Are you sure you want to delete the task "${task.title}"?`)) {
-      console.log('Delete Task:', task);
-      // Implémenter la logique de suppression de tâche
+  deleteTask(taskId: number): void {
+    if (confirm('Are you sure you want to delete this task?')) {
+      this.tasksService.deleteTask(taskId).subscribe(
+        () => {
+          // Retirer la tâche supprimée de la liste
+          this.tasks = this.tasks.filter(task => task.id !== taskId);
+          alert('Task deleted successfully!');
+          
+        },
+        (error) => {
+          console.error('Error deleting task', error);
+          alert('Error deleting task');
+        }
+      );
     }
   }
   

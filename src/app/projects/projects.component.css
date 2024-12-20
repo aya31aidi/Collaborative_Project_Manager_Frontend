@@ -64,13 +64,13 @@ a.btn, button {
 }
 
 a.btn-primary, button.btn-info {
-  background-color: #edf090; /* Vert */
+  background-color: #e0dde6; /* Vert */
   color: rgb(59, 56, 56);
   border-radius: 10px; 
 }
 
 a.btn-primary:hover, button.btn-info:hover {
-  background-color: #f3e336; /* Plus foncé au survol */
+  background-color: #d1def1; /* Plus foncé au survol */
 }
 
 ul {

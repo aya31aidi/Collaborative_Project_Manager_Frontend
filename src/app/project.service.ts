@@ -24,4 +24,7 @@ export class ProjectService {
   addProject(teamId: number, project: any): Observable<Project> {
     return this.http.post<Project>(`${this.apiUrl}/${teamId}`, project);
   }
+  deleteProject(projectId: number) {
+    return this.http.delete(`${this.apiUrl}/${projectId}`);
+  }
 }
