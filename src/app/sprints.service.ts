@@ -28,4 +28,7 @@ export class SprintService {
   getUsersForSprint(sprintId: number): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/${sprintId}/users`);
   }
+  createSprint(projectId: number, sprintData: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/${projectId}`, sprintData);
+  }
 }

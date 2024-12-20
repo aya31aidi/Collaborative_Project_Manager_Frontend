@@ -8,7 +8,8 @@
         <th>Title</th>
         <th>Description</th>
         <th>Teams</th>
-        <th>Sprints</th> <!-- Nouvelle colonne pour les Sprints -->
+        <th>Sprints</th>
+        <th>Actions</th> <!-- Nouvelle colonne pour les actions -->
       </tr>
     </thead>
     <tbody>
@@ -16,8 +17,7 @@
         <td>{{ project.id }}</td>
         <td>{{ project.name }}</td>
         <td>{{ project.description }}</td>
-        <td>{{ project.team.name }}
-        </td>
+        <td>{{ project.team.name }}</td>
         <td>
           <div *ngIf="project.sprints && project.sprints.length > 0; else noSprints">
             <ul>
@@ -27,6 +27,10 @@
             </ul>
           </div>
           <ng-template #noSprints>No Sprints</ng-template>
+        </td>
+        <td>
+          <!-- Bouton pour ajouter un sprint -->
+          <button [routerLink]="['/add-sprint', project.id]" class="btn btn-success btn-sm">Add Sprint</button>
         </td>
       </tr>
     </tbody>

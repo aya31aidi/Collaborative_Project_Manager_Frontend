@@ -64,13 +64,13 @@ a.btn, button {
 }
 
 a.btn-primary, button.btn-info {
-  background-color: #9de49f; /* Vert */
-  color: white;
-  border-radius: 20px; 
+  background-color: #edf090; /* Vert */
+  color: rgb(59, 56, 56);
+  border-radius: 10px; 
 }
 
 a.btn-primary:hover, button.btn-info:hover {
-  background-color: #177d1c; /* Plus foncé au survol */
+  background-color: #f3e336; /* Plus foncé au survol */
 }
 
 ul {
@@ -89,7 +89,6 @@ td ul {
   flex-wrap: wrap;
 }
 button, a.btn {
-  background-color: #28a745; /* Vert pour Ajouter */
     color: white;
     padding: 10px 16px;
     border: none;

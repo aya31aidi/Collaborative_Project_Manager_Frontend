@@ -78,13 +78,6 @@ export class AddProjectComponent {
       this.teamName = '';  // Reset the team name
     }
   
-  /*addUserToTeam(): void {
-    if (this.selectedUser && !this.project.team.includes(this.selectedUser)) {
-      this.project.team.push(this.selectedUser);
-      this.selectedUser = null; // Reset the selection
-    }
-  }*/
-
   removeUserFromTeam(member: any): void {
     this.project.team = this.project.team.filter((user) => user !== member);
   }
