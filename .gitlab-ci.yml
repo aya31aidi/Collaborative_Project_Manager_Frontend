@@ -7,5 +7,38 @@ install_dependencies:
   image: node:18  # Choisir l'image Docker contenant Node.js
   script:
     - npm install --legacy-peer-deps
+<<<<<<< HEAD
   only:
     - main  # Exécute le pipeline uniquement sur la branche principale (ou adaptez selon votre branche)
+=======
+  cache:
+    paths:
+      - node_modules/
+
+# Étape des tests unitaires
+test:
+  stage: test
+  image: node:18
+  script:
+    - npm run test -- --watch=false --browsers=ChromeHeadlessNoSandbox
+  artifacts:
+    paths:
+      - coverage/
+
+# Étape de la construction du projet Angular
+build:
+  stage: build
+  image: node:18
+  script:
+    - npm run build --prod
+  artifacts:
+    paths:
+      - dist/
+
+# Étape de déploiement (optionnelle)
+deploy:
+  stage: deploy
+  image: node:18
+  script:
+    - echo "Déploiement sur votre serveur"
+>>>>>>> 42ed8bc66b305d9104548a8b2c5e462cec6bd3ca
