@@ -1,0 +1,66 @@
+stages:
+  - install
+  - test
+  - build
+  - deploy
+
+# Étape d'installation des dépendances
+install_dependencies:
+  stage: install
+  image: node:18
+  script:
+    - npm install --legacy-peer-deps
+  cache:
+    paths:
+      - node_modules/
+
+# Étape des tests unitaires
+test:
+  stage: test
+  image: node:18
+  script:
+    - npm run test -- --watch=false --browsers=ChromeHeadlessNoSandbox
+  artifacts:
+    paths:
+      - coverage/
+
+# Étape de la construction du projet Angular
+build:
+  stage: build
+  image: node:18
+  script:
+    - npm run build --prod
+  artifacts:
+    paths:
+      - dist/
+
+# Étape de déploiement (optionnelle)
+deploy:
+  stage: deploy
+  image: node:18
+  script:
+    - echo "Déploiement sur votre serveur"
+
+
+
+"""stages:
+  - build
+  - test
+  - deploy
+
+build:
+  stage: build
+  script:
+    - npm install
+    - npm run build
+
+test:
+  stage: test
+  script:
+    - npm test
+
+deploy:
+  stage: deploy
+  script:
+    - docker build -t frontend-image .
+    - docker run -d -p 80:80 frontend-image"""
