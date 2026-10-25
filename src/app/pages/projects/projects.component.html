@@ -1,0 +1,152 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Projects</h1>
+      <p>Each project belongs to one team and is split into sprints.</p>
+    </div>
+    <div class="row">
+      <label class="search">
+        <app-icon name="search" [size]="15" />
+        <span class="sr-only">Search projects</span>
+        <input class="input" placeholder="Search projects" [value]="search()" (input)="search.set($any($event.target).value)" />
+      </label>
+      <button type="button" class="btn btn-primary" (click)="openCreate()">
+        <app-icon name="plus" [size]="16" /> New project
+      </button>
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="grid grid-cards">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton" style="height: 220px"></div>
+      }
+    </div>
+  } @else {
+    <div class="grid grid-cards">
+      @for (card of cards(); track card.project.id) {
+        <a class="card project" [routerLink]="['/projects', card.project.id]">
+          <div class="project-top">
+            <span class="initial">{{ card.project.name.charAt(0).toUpperCase() }}</span>
+            @if (card.current && card.currentState) {
+              <span class="status status-{{ card.currentState }}">{{ stateLabel[card.currentState] }} sprint</span>
+            } @else {
+              <span class="chip">No sprint yet</span>
+            }
+          </div>
+
+          <h2>{{ card.project.name }}</h2>
+          <p class="desc">{{ card.project.description || 'No description' }}</p>
+
+          @if (card.current) {
+            <p class="current small"><app-icon name="layers" [size]="13" /> {{ card.current.name }}</p>
+          }
+
+          <div class="progress-block">
+            <div class="row small">
+              <span class="muted">{{ card.progress.done }} of {{ card.progress.total }} tasks done</span>
+              <span class="spacer"></span>
+              <span class="mono muted">{{ card.progress.percent }}%</span>
+            </div>
+            <div class="progress"><span [style.width.%]="card.progress.percent"></span></div>
+          </div>
+
+          <footer>
+            @if (card.project.team; as team) {
+              <div class="stack">
+                @for (user of team.users.slice(0, 4); track user.id) {
+                  <app-avatar [name]="user.fullName" [size]="26" />
+                }
+                @if (team.users.length > 4) {
+                  <span class="more">+{{ team.users.length - 4 }}</span>
+                }
+              </div>
+              <span class="small muted">{{ team.name }}</span>
+            } @else {
+              <span class="small faint">No team</span>
+            }
+            <span class="spacer"></span>
+            <span class="small faint">{{ card.project.sprints.length }} sprint{{ card.project.sprints.length === 1 ? '' : 's' }}</span>
+          </footer>
+        </a>
+      } @empty {
+        <div class="card empty full">
+          <app-icon name="folder" [size]="28" />
+          @if (search()) {
+            <h3>No project matches "{{ search() }}"</h3>
+          } @else {
+            <h3>No projects yet</h3>
+            <p>Create the first one and give it a team.</p>
+            <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">New project</button>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<app-modal [open]="creating()" title="New project" [wide]="true" (closed)="creating.set(false)">
+  <form class="form" [formGroup]="form" (ngSubmit)="create()" id="project-form">
+    <div class="field">
+      <label for="p-name">Name</label>
+      <input id="p-name" class="input" formControlName="name" placeholder="Customer portal" />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <span class="error">A project needs a name.</span>
+      }
+    </div>
+    <div class="field">
+      <label for="p-desc">Description</label>
+      <textarea id="p-desc" class="textarea" formControlName="description" rows="2" maxlength="255" placeholder="One or two sentences on the goal"></textarea>
+    </div>
+
+    <div class="field">
+      <span class="label">Team</span>
+      <div class="segmented" role="group" aria-label="Team">
+        <button type="button" [class.on]="teamMode() === 'existing'" [disabled]="!freeTeams().length" (click)="teamMode.set('existing')">
+          Existing team
+        </button>
+        <button type="button" [class.on]="teamMode() === 'new'" (click)="teamMode.set('new')">New team</button>
+      </div>
+      @if (!freeTeams().length) {
+        <span class="hint">Every existing team already has a project, so this one gets a new team.</span>
+      }
+    </div>
+
+    @if (teamMode() === 'existing') {
+      <div class="field">
+        <label for="p-team">Choose a team</label>
+        <select id="p-team" class="select" formControlName="teamId">
+          @for (team of freeTeams(); track team.id) {
+            <option [ngValue]="team.id">{{ team.name }} ({{ team.users.length }} member{{ team.users.length === 1 ? '' : 's' }})</option>
+          }
+        </select>
+      </div>
+    } @else {
+      <div class="field">
+        <label for="p-team-name">Team name</label>
+        <input id="p-team-name" class="input" formControlName="teamName" placeholder="Portal squad" />
+        @if (form.controls.teamName.touched && !form.controls.teamName.value.trim()) {
+          <span class="error">Give the new team a name.</span>
+        }
+      </div>
+      <div class="field">
+        <span class="label">Members <span class="faint">({{ members().length }} selected)</span></span>
+        <div class="people">
+          @for (user of users(); track user.id) {
+            <label class="person" [class.on]="members().includes(user.id)">
+              <input type="checkbox" [checked]="members().includes(user.id)" (change)="toggleMember(user.id)" />
+              <app-avatar [name]="user.fullName" [size]="24" />
+              <span>{{ user.fullName }}</span>
+            </label>
+          } @empty {
+            <span class="hint">Nobody is registered yet. People can be added later from the People page.</span>
+          }
+        </div>
+      </div>
+    }
+  </form>
+  <div modal-footer>
+    <button type="button" class="btn" (click)="creating.set(false)">Cancel</button>
+    <button type="submit" form="project-form" class="btn btn-primary" [disabled]="saving()">Create project</button>
+  </div>
+</app-modal>

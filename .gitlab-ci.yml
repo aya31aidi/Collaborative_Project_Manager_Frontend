@@ -1,11 +1,17 @@
 stages:
-  - install
+  - build
 
-# Etape d'installation des dépendances
-install_dependencies:
-  stage: install
-  image: node:18  # Choisir l'image Docker contenant Node.js
+build:
+  stage: build
+  image: node:20
+  cache:
+    paths:
+      - node_modules/
   script:
-    - npm install --legacy-peer-deps
+    - npm ci
+    - npx ng build
+  artifacts:
+    paths:
+      - dist/collaborative-project-management/browser
   only:
-    - main  # Exécute le pipeline uniquement sur la branche principale (ou adaptez selon votre branche)
+    - main

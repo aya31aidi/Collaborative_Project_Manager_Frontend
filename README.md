@@ -1,27 +1,54 @@
-# CollaborativeProjectManagement
+# Collaborative Project Manager
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.11.
+Angular client for a small team workspace: projects, teams, sprints and a drag-and-drop task board.
+The data comes from the [Spring Boot API](https://github.com/aya31aidi/Collaborative_Project_Manager_Backend_).
 
-## Development server
+![Sprint board](docs/board.png)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## What it does
 
-## Code scaffolding
+- **Overview**: running sprints sorted by end date, open high-priority tasks, and the open work per person.
+- **Projects**: one team per project, created with an existing team or a new one in the same dialog.
+- **Sprint board**: To do / In progress / Done columns. Cards move by drag and drop (mouse or touch), the status is saved
+  at once and rolled back if the API refuses it. Search, filter by person or priority, tags, edit and delete from the card.
+- **Teams and people**: members added and removed one by one, roles, emails, and the teams each person is in.
+- **All tasks**: every task in one table, in-progress work first.
+- Light and dark theme, phone layout, readable error messages from the API.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+| Overview | Project |
+|---|---|
+| ![Overview](docs/overview.png) | ![Project](docs/project.png) |
 
-## Build
+## Run it
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+The API has to run first (see its README; `docker compose up --build` in its `projectmanager` folder is the quickest way).
+Then, with Node 18 or 20:
 
-## Running unit tests
+```bash
+npm install
+npm start
+```
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+The app opens on http://localhost:4200 and talks to http://localhost:8070. The API address lives in
+`src/environments/environment.ts` (and `environment.production.ts` for `ng build`).
 
-## Running end-to-end tests
+## Scripts
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+| | |
+|---|---|
+| `npm start` | dev server with reload |
+| `npm run build` | production build in `dist/` |
+| `npm test` | unit tests in Karma (watch mode) |
+| `npm run test:ci` | the same tests once, in headless Chrome |
 
-## Further help
+## Structure
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```
+src/app/
+  core/       models, API services, error interceptor, toasts, confirm dialog, sprint date helpers
+  shared/     icon, avatar, modal, sprint form
+  pages/      dashboard, projects, project-detail, sprint-board, tasks, teams, team-detail, people
+```
+
+Angular 17 standalone components with signals and the built-in control flow; drag and drop from `@angular/cdk`.
+No UI library: the look comes from the design tokens in `src/styles.css`.

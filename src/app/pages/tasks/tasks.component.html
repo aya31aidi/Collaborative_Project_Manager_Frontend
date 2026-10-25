@@ -1,0 +1,91 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>All tasks</h1>
+      <p>Every task of every sprint in one list. Open a row to work on it in its sprint board.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="segmented" role="group" aria-label="Filter by status">
+      <button type="button" [class.on]="status() === 'all'" (click)="status.set('all')">All <span class="n">{{ tasks().length }}</span></button>
+      @for (s of statuses; track s.value) {
+        <button type="button" [class.on]="status() === s.value" (click)="status.set(s.value)">
+          {{ s.label }} <span class="n">{{ counts()[s.value] }}</span>
+        </button>
+      }
+    </div>
+    <select class="select prio-select" [value]="priority()" (change)="setPriority($any($event.target).value)" aria-label="Filter by priority">
+      <option value="all">Any priority</option>
+      @for (p of priorities; track p.value) {
+        <option [value]="p.value">{{ p.label }}</option>
+      }
+    </select>
+    <span class="spacer"></span>
+    <label class="search">
+      <app-icon name="search" [size]="15" />
+      <span class="sr-only">Search tasks</span>
+      <input class="input" placeholder="Task, person, sprint or tag" [value]="search()" (input)="search.set($any($event.target).value)" />
+    </label>
+  </div>
+
+  <div class="card table-wrap">
+    @if (loading()) {
+      <div class="skeleton" style="height: 240px; margin: 12px"></div>
+    } @else {
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>Sprint</th>
+            <th>Status</th>
+            <th>Priority</th>
+            <th>Assignee</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (task of visible(); track task.id) {
+            <tr>
+              <td>
+                <a [routerLink]="['/sprints', task.sprintId]" class="title">{{ task.title }}</a>
+                @if (task.tags.length) {
+                  <div class="tags">
+                    @for (tag of task.tags; track tag.id) {
+                      <span class="chip">{{ tag.name }}</span>
+                    }
+                  </div>
+                }
+              </td>
+              <td>
+                @if (task.sprintId) {
+                  <a [routerLink]="['/sprints', task.sprintId]" class="muted sprint-link">{{ task.sprintName }}</a>
+                }
+              </td>
+              <td><span class="status status-{{ task.status }}">{{ statusLabel[task.status] }}</span></td>
+              <td><span class="prio prio-{{ task.priority }}"><app-icon name="flag" [size]="12" /> {{ task.priority.toLowerCase() }}</span></td>
+              <td>
+                @if (task.assignedTo; as person) {
+                  <span class="person"><app-avatar [name]="person.fullName" [size]="24" /> {{ person.fullName }}</span>
+                } @else {
+                  <span class="faint">Unassigned</span>
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="5">
+                <div class="empty">
+                  <app-icon name="tasks" [size]="26" />
+                  <h3>{{ tasks().length ? 'No task matches these filters' : 'No tasks yet' }}</h3>
+                  @if (!tasks().length) {
+                    <p>Tasks are created inside a sprint board.</p>
+                  }
+                </div>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </div>
+</div>

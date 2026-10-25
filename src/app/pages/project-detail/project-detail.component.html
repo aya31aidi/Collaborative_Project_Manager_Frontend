@@ -1,0 +1,142 @@
+<div class="page">
+  @if (loading()) {
+    <div class="skeleton" style="height: 90px; margin-bottom: 24px"></div>
+    <div class="skeleton" style="height: 300px"></div>
+  } @else if (notFound()) {
+    <div class="card empty">
+      <app-icon name="alert" [size]="28" />
+      <h3>This project does not exist</h3>
+      <a routerLink="/projects" class="btn">Back to projects</a>
+    </div>
+  } @else {
+    @if (project(); as project) {
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/projects">Projects</a>
+        <app-icon name="chevron-right" [size]="13" />
+        <span>{{ project.name }}</span>
+      </nav>
+
+      <header class="page-header">
+        <div>
+          <h1>{{ project.name }}</h1>
+          <p>{{ project.description || 'No description yet.' }}</p>
+        </div>
+        <div class="row">
+          <button type="button" class="btn btn-ghost" (click)="openEdit()"><app-icon name="pencil" [size]="14" /> Edit</button>
+          <button type="button" class="btn btn-ghost btn-danger" (click)="remove()"><app-icon name="trash" [size]="14" /> Delete</button>
+        </div>
+      </header>
+
+      <div class="layout">
+        <section>
+          <div class="section-title">
+            <h2>Sprints <span class="faint">· {{ project.sprints.length }}</span></h2>
+            <button type="button" class="btn btn-primary btn-sm" (click)="addingSprint.set(true)">
+              <app-icon name="plus" [size]="14" /> New sprint
+            </button>
+          </div>
+
+          <div class="timeline">
+            @for (row of sprints(); track row.sprint.id) {
+              <a class="card sprint" [class.is-active]="row.state === 'active'" [routerLink]="['/sprints', row.sprint.id]">
+                <span class="node node-{{ row.state }}"></span>
+                <div class="sprint-main">
+                  <div class="row" style="flex-wrap: wrap">
+                    <h3>{{ row.sprint.name }}</h3>
+                    <span class="status status-{{ row.state }}">{{ stateLabel[row.state] }}</span>
+                  </div>
+                  <p class="muted small"><app-icon name="calendar" [size]="13" /> {{ row.range }} · {{ row.note }}</p>
+                </div>
+                <div class="sprint-side">
+                  <span class="small muted mono">{{ row.progress.done }}/{{ row.progress.total }} done</span>
+                  <div class="progress stacked">
+                    <span class="p-done" [style.width.%]="row.progress.total ? (row.progress.done / row.progress.total) * 100 : 0"></span>
+                    <span class="p-progress" [style.width.%]="row.progress.total ? (row.progress.inProgress / row.progress.total) * 100 : 0"></span>
+                  </div>
+                </div>
+                <span class="open small">Open board <app-icon name="arrow-right" [size]="13" /></span>
+              </a>
+            } @empty {
+              <div class="card empty">
+                <app-icon name="layers" [size]="26" />
+                <h3>No sprints yet</h3>
+                <p>Plan the first two weeks of work.</p>
+                <button type="button" class="btn btn-primary btn-sm" (click)="addingSprint.set(true)">Create a sprint</button>
+              </div>
+            }
+          </div>
+        </section>
+
+        <aside class="side">
+          <div class="card card-pad">
+            <h2 class="side-title">Progress</h2>
+            <div class="big mono">{{ progress().percent }}<span>%</span></div>
+            <div class="progress stacked" style="margin: 10px 0 12px">
+              <span class="p-done" [style.width.%]="progress().total ? (progress().done / progress().total) * 100 : 0"></span>
+              <span class="p-progress" [style.width.%]="progress().total ? (progress().inProgress / progress().total) * 100 : 0"></span>
+            </div>
+            <dl class="counts">
+              <div><dt><span class="status status-DONE">Done</span></dt><dd class="mono">{{ progress().done }}</dd></div>
+              <div><dt><span class="status status-IN_PROGRESS">In progress</span></dt><dd class="mono">{{ progress().inProgress }}</dd></div>
+              <div><dt><span class="status status-TO_DO">To do</span></dt><dd class="mono">{{ progress().todo }}</dd></div>
+            </dl>
+          </div>
+
+          <div class="card card-pad">
+            <div class="section-title" style="margin-bottom: 10px">
+              <h2 class="side-title">Team</h2>
+              @if (project.team) {
+                <a [routerLink]="['/teams', project.team.id]" class="small manage">Manage</a>
+              }
+            </div>
+            @if (project.team; as team) {
+              <p class="team-name">{{ team.name }}</p>
+              <ul class="members">
+                @for (user of team.users; track user.id) {
+                  <li>
+                    <app-avatar [name]="user.fullName" [size]="30" />
+                    <div>
+                      <span class="name">{{ user.fullName }}</span>
+                      <span class="faint small">{{ user.role || user.username }}</span>
+                    </div>
+                  </li>
+                } @empty {
+                  <li class="faint small">Nobody in this team yet.</li>
+                }
+              </ul>
+            } @else {
+              <p class="faint small">The team of this project was deleted. Tasks can still be edited, but nobody can be assigned.</p>
+            }
+          </div>
+        </aside>
+      </div>
+
+      <app-sprint-form
+        [open]="addingSprint()"
+        [projectId]="project.id"
+        (saved)="onSprintCreated($event)"
+        (closed)="addingSprint.set(false)"
+      />
+    }
+  }
+</div>
+
+<app-modal [open]="editing()" title="Edit project" (closed)="editing.set(false)">
+  <form class="form" [formGroup]="form" (ngSubmit)="save()" id="edit-project-form">
+    <div class="field">
+      <label for="ep-name">Name</label>
+      <input id="ep-name" class="input" formControlName="name" />
+      @if (form.controls.name.touched && form.controls.name.invalid) {
+        <span class="error">A project needs a name.</span>
+      }
+    </div>
+    <div class="field">
+      <label for="ep-desc">Description</label>
+      <textarea id="ep-desc" class="textarea" formControlName="description" rows="3" maxlength="255"></textarea>
+    </div>
+  </form>
+  <div modal-footer>
+    <button type="button" class="btn" (click)="editing.set(false)">Cancel</button>
+    <button type="submit" form="edit-project-form" class="btn btn-primary" [disabled]="saving()">Save changes</button>
+  </div>
+</app-modal>

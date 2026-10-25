@@ -1,0 +1,144 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <div class="eyebrow">{{ todayLabel }}</div>
+      <h1>{{ greeting }}</h1>
+      <p>Where every project stands today: running sprints, open work and who is carrying it.</p>
+    </div>
+    <a routerLink="/projects" class="btn">
+      <app-icon name="folder" [size]="15" /> All projects
+    </a>
+  </header>
+
+  @if (loading()) {
+    <div class="stats">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="skeleton" style="height: 104px"></div>
+      }
+    </div>
+  } @else if (failed()) {
+    <div class="card empty">
+      <app-icon name="alert" [size]="28" />
+      <h3>No data from the API</h3>
+      <p>Start the Spring Boot backend (port 8070), then reload this page.</p>
+    </div>
+  } @else {
+    <section class="stats">
+      <div class="card stat">
+        <span class="label"><app-icon name="layers" [size]="15" /> Active sprints</span>
+        <strong class="mono">{{ stats().activeSprints }}</strong>
+        <span class="faint small">across {{ stats().projects }} project{{ stats().projects === 1 ? '' : 's' }}</span>
+      </div>
+      <div class="card stat">
+        <span class="label"><app-icon name="tasks" [size]="15" /> Open tasks</span>
+        <strong class="mono">{{ stats().openTasks }}</strong>
+        <span class="faint small">{{ stats().inProgress }} in progress right now</span>
+      </div>
+      <div class="card stat">
+        <span class="label"><app-icon name="check" [size]="15" /> Current sprints done</span>
+        <strong class="mono">{{ stats().currentPercent }}%</strong>
+        <div class="progress"><span [style.width.%]="stats().currentPercent"></span></div>
+        <span class="faint small">{{ stats().currentDone }} of {{ stats().currentTotal }} tasks</span>
+      </div>
+      <div class="card stat">
+        <span class="label"><app-icon name="users" [size]="15" /> People</span>
+        <strong class="mono">{{ stats().people }}</strong>
+        <a routerLink="/people" class="small link">Manage people <app-icon name="arrow-right" [size]="12" /></a>
+      </div>
+    </section>
+
+    <div class="layout">
+      <section>
+        <div class="section-title">
+          <h2>Running sprints</h2>
+          <span class="faint small">sorted by end date</span>
+        </div>
+
+        @for (row of activeSprints(); track row.sprint.id) {
+          <a class="card sprint-row" [routerLink]="['/sprints', row.sprint.id]">
+            <div class="sprint-info">
+              <span class="faint small">{{ row.project.name }}</span>
+              <h3>{{ row.sprint.name }}</h3>
+              <span class="muted small"><app-icon name="calendar" [size]="13" /> {{ row.range }} · {{ daysLabel(row.daysLeft) }}</span>
+            </div>
+            <div class="sprint-progress">
+              <div class="row small">
+                <span class="mono"><strong>{{ row.done }}</strong>/{{ row.total }} done</span>
+                <span class="spacer"></span>
+                <span class="mono muted">{{ row.percent }}%</span>
+              </div>
+              <div class="progress stacked">
+                <span class="p-done" [style.width.%]="row.total ? (row.done / row.total) * 100 : 0"></span>
+                <span class="p-progress" [style.width.%]="row.total ? (row.inProgress / row.total) * 100 : 0"></span>
+              </div>
+            </div>
+            <app-icon name="chevron-right" [size]="18" class="faint chev" />
+          </a>
+        } @empty {
+          <div class="card empty">
+            <app-icon name="layers" [size]="26" />
+            <h3>No sprint is running today</h3>
+            <p>Open a project to plan the next one.</p>
+            <a routerLink="/projects" class="btn btn-primary btn-sm">Go to projects</a>
+          </div>
+        }
+
+        <div class="section-title" style="margin-top: 28px">
+          <h2>Needs attention</h2>
+          <span class="faint small">open high-priority tasks</span>
+        </div>
+        <div class="card">
+          @for (item of focus(); track item.task.id) {
+            <a class="focus-row" [routerLink]="['/sprints', item.row.sprint.id]">
+              <span class="prio prio-HIGH"><app-icon name="flag" [size]="13" /></span>
+              <span class="focus-title">{{ item.task.title }}</span>
+              <span class="status status-{{ item.task.status }}">{{ item.task.status === 'TO_DO' ? 'To do' : 'In progress' }}</span>
+              @if (item.task.assignedTo; as person) {
+                <app-avatar [name]="person.fullName" [size]="24" />
+              } @else {
+                <span class="faint small">Unassigned</span>
+              }
+            </a>
+          } @empty {
+            <p class="empty small">Nothing urgent left open in the running sprints.</p>
+          }
+        </div>
+      </section>
+
+      <aside>
+        <div class="section-title">
+          <h2>Workload</h2>
+          <span class="legend small">
+            <i class="dot p-progress"></i> in progress <i class="dot todo"></i> to do
+          </span>
+        </div>
+        <div class="card card-pad workload">
+          @for (row of workload().rows; track row.user.id) {
+            <div class="load-row">
+              <app-avatar [name]="row.user.fullName" [size]="28" />
+              <div class="load-main">
+                <div class="row small">
+                  <span class="name">{{ row.user.fullName }}</span>
+                  <span class="spacer"></span>
+                  <span class="mono muted">{{ row.todo + row.inProgress }}</span>
+                </div>
+                <div class="bar">
+                  <span class="p-progress" [style.width.%]="(row.inProgress / workload().max) * 100"></span>
+                  <span class="todo" [style.width.%]="(row.todo / workload().max) * 100"></span>
+                </div>
+              </div>
+            </div>
+          } @empty {
+            <p class="faint small">No open tasks are assigned yet.</p>
+          }
+          @if (workload().unassigned) {
+            <p class="unassigned small">
+              <app-icon name="alert" [size]="14" />
+              {{ workload().unassigned }} open task{{ workload().unassigned === 1 ? ' has' : 's have' }} nobody assigned
+            </p>
+          }
+        </div>
+      </aside>
+    </div>
+  }
+</div>

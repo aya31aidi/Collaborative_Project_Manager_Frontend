@@ -1,0 +1,156 @@
+.shell {
+  display: grid;
+  grid-template-columns: 248px 1fr;
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  height: 100vh;
+  padding: 20px 14px;
+  background: var(--sidebar);
+  color: var(--sidebar-ink);
+  /* Keeps the edge visible in dark mode, where the page is nearly as dark. */
+  box-shadow: inset -1px 0 0 rgba(255, 255, 255, 0.05);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.brand small {
+  display: block;
+  color: var(--sidebar-muted);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.mark {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #6d65f0, #4f46e5);
+  color: #fff;
+  box-shadow: 0 6px 16px -6px rgba(79, 70, 229, 0.8);
+}
+
+nav {
+  display: grid;
+  gap: 2px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  width: 100%;
+  height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--sidebar-ink);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.nav-link app-icon {
+  color: var(--sidebar-muted);
+  transition: color 0.15s;
+}
+
+.nav-link:hover {
+  background: var(--sidebar-active);
+  color: #fff;
+}
+
+.nav-link.active {
+  background: var(--sidebar-active);
+  color: #fff;
+}
+
+.nav-link.active app-icon {
+  color: #a5a6fa;
+}
+
+.sidebar-foot {
+  display: grid;
+  gap: 8px;
+  margin-top: auto;
+}
+
+.credit {
+  padding: 0 12px;
+  color: var(--sidebar-muted);
+  font-size: 11.5px;
+}
+
+.content {
+  min-width: 0;
+}
+
+.topbar,
+.scrim {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+  }
+
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 56px;
+    padding: 0 12px;
+    border-bottom: 1px solid var(--border);
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    backdrop-filter: blur(8px);
+  }
+
+  .topbar .brand {
+    padding: 0;
+  }
+
+  .sidebar {
+    position: fixed;
+    z-index: 60;
+    inset: 0 auto 0 0;
+    width: 264px;
+    translate: -100% 0;
+    transition: translate 0.25s ease;
+  }
+
+  .sidebar.open {
+    translate: 0 0;
+    box-shadow: var(--shadow-lg);
+  }
+
+  .scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 55;
+    display: block;
+    background: rgba(10, 12, 18, 0.45);
+  }
+}

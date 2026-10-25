@@ -1,0 +1,86 @@
+.narrow {
+  max-width: 920px;
+}
+
+.link {
+  color: var(--accent);
+  font-weight: 550;
+}
+
+.card-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.add {
+  display: flex;
+  gap: 8px;
+}
+
+.add .select {
+  width: 220px;
+}
+
+.members {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.members li {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+}
+
+.members li:last-child {
+  border-bottom: 0;
+}
+
+.who {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  line-height: 1.35;
+}
+
+.name {
+  font-weight: 600;
+}
+
+.mail {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mail:hover {
+  color: var(--accent);
+}
+
+.members li.empty {
+  display: grid;
+  border: 0;
+}
+
+@media (max-width: 640px) {
+  .mail {
+    display: none;
+  }
+
+  .add {
+    width: 100%;
+  }
+
+  .add .select {
+    flex: 1;
+    width: auto;
+  }
+}

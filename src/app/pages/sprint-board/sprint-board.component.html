@@ -1,0 +1,260 @@
+<div class="page board-page">
+  @if (loading()) {
+    <div class="skeleton" style="height: 120px; margin-bottom: 20px"></div>
+    <div class="board">
+      @for (col of statuses; track col.value) {
+        <div class="skeleton" style="height: 360px"></div>
+      }
+    </div>
+  } @else if (notFound()) {
+    <div class="card empty">
+      <app-icon name="alert" [size]="28" />
+      <h3>This sprint does not exist</h3>
+      <p>It may have been deleted.</p>
+      <a routerLink="/projects" class="btn">Back to projects</a>
+    </div>
+  } @else {
+    @if (sprint(); as sprint) {
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/projects">Projects</a>
+        <app-icon name="chevron-right" [size]="13" />
+        <a [routerLink]="['/projects', sprint.projectId]">{{ sprint.projectName }}</a>
+        <app-icon name="chevron-right" [size]="13" />
+        <span>Board</span>
+      </nav>
+
+      <header class="board-head card card-pad">
+        <div class="head-main">
+          <div class="row" style="gap: 10px; flex-wrap: wrap">
+            <h1>{{ sprint.name }}</h1>
+            <span class="status status-{{ state() }}">{{ stateLabel[state()] }}</span>
+          </div>
+          <p class="meta">
+            <span><app-icon name="calendar" [size]="14" /> {{ range() }}</span>
+            <span><app-icon name="clock" [size]="14" /> {{ timeNote() }}</span>
+            <span><app-icon name="users" [size]="14" /> {{ members().length }} on the team</span>
+          </p>
+        </div>
+
+        <div class="head-progress">
+          <div class="row small">
+            <strong class="mono">{{ progress().done }}/{{ progress().total }}</strong>
+            <span class="muted">tasks done</span>
+            <span class="spacer"></span>
+            <span class="muted mono">{{ progress().percent }}%</span>
+          </div>
+          <div class="progress stacked" [attr.aria-label]="progress().percent + '% done'">
+            <span class="p-done" [style.width.%]="progress().total ? (progress().done / progress().total) * 100 : 0"></span>
+            <span class="p-progress" [style.width.%]="progress().total ? (progress().inProgress / progress().total) * 100 : 0"></span>
+          </div>
+          @if (state() === 'active') {
+            <p class="faint small">{{ elapsed() }}% of the sprint time used</p>
+          }
+        </div>
+
+        <div class="head-actions">
+          <button type="button" class="btn btn-ghost btn-sm" (click)="editingSprint.set(true)">
+            <app-icon name="pencil" [size]="14" /> Edit
+          </button>
+          <button type="button" class="btn btn-ghost btn-sm btn-danger" (click)="deleteSprint()">
+            <app-icon name="trash" [size]="14" /> Delete
+          </button>
+        </div>
+      </header>
+
+      <div class="toolbar">
+        <label class="search">
+          <app-icon name="search" [size]="15" />
+          <span class="sr-only">Search tasks</span>
+          <input
+            class="input"
+            placeholder="Search title, description or tag"
+            [value]="search()"
+            (input)="search.set($any($event.target).value)"
+          />
+        </label>
+
+        <select class="select assignee" [value]="'' + assignee()" (change)="setAssignee($any($event.target).value)" aria-label="Filter by person">
+          <option value="all">Everyone</option>
+          <option value="none">Unassigned</option>
+          @for (m of members(); track m.id) {
+            <option [value]="'' + m.id">{{ m.fullName }}</option>
+          }
+        </select>
+
+        <div class="segmented" role="group" aria-label="Filter by priority">
+          <button type="button" [class.on]="priority() === 'all'" (click)="priority.set('all')">All</button>
+          @for (p of priorities; track p.value) {
+            <button type="button" [class.on]="priority() === p.value" (click)="priority.set(p.value)">{{ p.label }}</button>
+          }
+        </div>
+
+        @if (filtersActive()) {
+          <button type="button" class="btn btn-ghost btn-sm" (click)="clearFilters()">Clear</button>
+        }
+
+        <span class="spacer"></span>
+        <button type="button" class="btn btn-primary" (click)="openNew()">
+          <app-icon name="plus" [size]="16" /> New task
+        </button>
+      </div>
+
+      <div class="board" cdkDropListGroup>
+        @for (col of columns(); track col.value) {
+          <section [class]="'column col-' + col.value">
+            <header>
+              <span class="status status-{{ col.value }}">{{ col.label }}</span>
+              <span class="count mono">{{ col.tasks.length }}@if (col.tasks.length !== col.total) {<span class="faint"> / {{ col.total }}</span>}</span>
+              <span class="spacer"></span>
+              <button type="button" class="icon-btn" (click)="openNew(col.value)" [attr.aria-label]="'Add a task to ' + col.label">
+                <app-icon name="plus" [size]="16" />
+              </button>
+            </header>
+
+            <div
+              class="drop"
+              cdkDropList
+              [cdkDropListData]="col.value"
+              cdkDropListSortingDisabled
+              (cdkDropListDropped)="drop($event)"
+            >
+              @for (task of col.tasks; track task.id) {
+                <article
+                  class="task card"
+                  cdkDrag
+                  [cdkDragData]="task"
+                  tabindex="0"
+                  role="button"
+                  [attr.aria-label]="task.title + ', ' + task.priority.toLowerCase() + ' priority. Open to edit.'"
+                  (click)="openTask(task)"
+                  (keydown.enter)="openTask(task)"
+                >
+                  <div class="task-top">
+                    <span class="prio prio-{{ task.priority }}"><app-icon name="flag" [size]="12" /> {{ task.priority.toLowerCase() }}</span>
+                    <span class="faint small mono">#{{ task.id }}</span>
+                  </div>
+                  <h3>{{ task.title }}</h3>
+                  @if (task.description) {
+                    <p class="desc">{{ task.description }}</p>
+                  }
+                  @if (task.tags.length) {
+                    <div class="tags">
+                      @for (tag of task.tags; track tag.id) {
+                        <span class="chip">{{ tag.name }}</span>
+                      }
+                    </div>
+                  }
+                  <footer>
+                    @if (task.assignedTo; as person) {
+                      <app-avatar [name]="person.fullName" [size]="22" />
+                      <span class="small muted">{{ person.fullName }}</span>
+                    } @else {
+                      <span class="unassigned"><app-icon name="user" [size]="12" /></span>
+                      <span class="small faint">Unassigned</span>
+                    }
+                  </footer>
+                </article>
+              } @empty {
+                <p class="drop-hint">
+                  @if (filtersActive()) { No matching tasks } @else { Drop a task here }
+                </p>
+              }
+            </div>
+          </section>
+        }
+      </div>
+
+      <app-sprint-form
+        [open]="editingSprint()"
+        [sprint]="sprint"
+        (saved)="onSprintSaved($event)"
+        (closed)="editingSprint.set(false)"
+      />
+    }
+  }
+</div>
+
+<app-modal [open]="editing() !== null" [title]="editing() === 'new' ? 'New task' : 'Edit task'" [wide]="true" (closed)="closeTask()">
+  <form class="form" [formGroup]="form" (ngSubmit)="saveTask()" id="task-form">
+    <div class="field">
+      <label for="task-title">Title</label>
+      <input id="task-title" class="input" formControlName="title" placeholder="What needs to be done?" />
+      @if (form.controls.title.touched && form.controls.title.invalid) {
+        <span class="error">A task needs a title.</span>
+      }
+    </div>
+
+    <div class="field">
+      <label for="task-desc">Description</label>
+      <textarea id="task-desc" class="textarea" formControlName="description" rows="3" maxlength="255" placeholder="Details, links, acceptance criteria"></textarea>
+      <span class="hint">{{ form.controls.description.value.length }}/255</span>
+    </div>
+
+    <div class="form-row three">
+      <div class="field">
+        <label for="task-status">Status</label>
+        <select id="task-status" class="select" formControlName="status">
+          @for (s of statuses; track s.value) {
+            <option [value]="s.value">{{ s.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="task-priority">Priority</label>
+        <select id="task-priority" class="select" formControlName="priority">
+          @for (p of priorities; track p.value) {
+            <option [value]="p.value">{{ p.label }}</option>
+          }
+        </select>
+      </div>
+      <div class="field">
+        <label for="task-assignee">Assignee</label>
+        <select id="task-assignee" class="select" formControlName="assigneeId">
+          <option [ngValue]="null">Unassigned</option>
+          @for (m of members(); track m.id) {
+            <option [ngValue]="m.id">{{ m.fullName }}</option>
+          }
+        </select>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="task-tags">Tags</label>
+      <div class="tag-input input" (click)="tagInput.focus()">
+        @for (tag of tags(); track tag) {
+          <span class="chip chip-accent">
+            {{ tag }}
+            <button type="button" (click)="removeTag(tag)" [attr.aria-label]="'Remove tag ' + tag"><app-icon name="x" [size]="11" /></button>
+          </span>
+        }
+        <input
+          #tagInput
+          id="task-tags"
+          [value]="tagDraft()"
+          (input)="tagDraft.set($any($event.target).value)"
+          (keydown)="onTagKey($event)"
+          (blur)="addTag()"
+          maxlength="40"
+          [placeholder]="tags().length ? '' : 'Type a tag and press Enter'"
+        />
+      </div>
+    </div>
+
+    @if (!members().length) {
+      <p class="hint small faint">The project has no team members yet, so tasks stay unassigned. Add people on the team page.</p>
+    }
+  </form>
+
+  <div modal-footer>
+    @if (editingTask(); as task) {
+      <button type="button" class="btn btn-ghost btn-danger" (click)="deleteTask(task)">
+        <app-icon name="trash" [size]="14" /> Delete
+      </button>
+      <span class="spacer"></span>
+    }
+    <button type="button" class="btn" (click)="closeTask()">Cancel</button>
+    <button type="submit" form="task-form" class="btn btn-primary" [disabled]="saving()">
+      {{ editing() === 'new' ? 'Add task' : 'Save changes' }}
+    </button>
+  </div>
+</app-modal>

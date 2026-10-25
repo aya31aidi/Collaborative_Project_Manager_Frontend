@@ -1,0 +1,87 @@
+<div class="page narrow">
+  @if (loading()) {
+    <div class="skeleton" style="height: 90px; margin-bottom: 24px"></div>
+    <div class="skeleton" style="height: 260px"></div>
+  } @else if (notFound()) {
+    <div class="card empty">
+      <app-icon name="alert" [size]="28" />
+      <h3>This team does not exist</h3>
+      <a routerLink="/teams" class="btn">Back to teams</a>
+    </div>
+  } @else {
+    @if (team(); as team) {
+      <nav class="breadcrumb" aria-label="Breadcrumb">
+        <a routerLink="/teams">Teams</a>
+        <app-icon name="chevron-right" [size]="13" />
+        <span>{{ team.name }}</span>
+      </nav>
+
+      <header class="page-header">
+        <div>
+          <h1>{{ team.name }}</h1>
+          <p>
+            @if (team.project; as project) {
+              Works on <a [routerLink]="['/projects', project.id]" class="link">{{ project.name }}</a>
+            } @else {
+              No project yet. Pick this team when creating a project.
+            }
+          </p>
+        </div>
+        <div class="row">
+          <button type="button" class="btn btn-ghost" (click)="openRename()"><app-icon name="pencil" [size]="14" /> Rename</button>
+          <button type="button" class="btn btn-ghost btn-danger" (click)="remove()"><app-icon name="trash" [size]="14" /> Delete</button>
+        </div>
+      </header>
+
+      <section class="card">
+        <div class="card-head">
+          <h2>Members <span class="faint">· {{ team.users.length }}</span></h2>
+          <form class="add" (ngSubmit)="addMember()">
+            <select class="select" name="user" [(ngModel)]="selectedUser" aria-label="Person to add" [disabled]="!candidates().length">
+              <option [ngValue]="null" disabled>{{ candidates().length ? 'Add someone...' : 'Everyone is already in' }}</option>
+              @for (person of candidates(); track person.id) {
+                <option [ngValue]="person.id">{{ person.fullName }}</option>
+              }
+            </select>
+            <button type="submit" class="btn btn-primary" [disabled]="selectedUser === null">
+              <app-icon name="user-plus" [size]="15" /> Add
+            </button>
+          </form>
+        </div>
+
+        <ul class="members">
+          @for (user of team.users; track user.id) {
+            <li>
+              <app-avatar [name]="user.fullName" [size]="36" />
+              <div class="who">
+                <span class="name">{{ user.fullName }}</span>
+                <span class="faint small">{{ '@' + user.username }}{{ user.role ? ' · ' + user.role : '' }}</span>
+              </div>
+              <a class="faint small mail" [href]="'mailto:' + user.email"><app-icon name="mail" [size]="13" /> {{ user.email }}</a>
+              <button type="button" class="btn btn-ghost btn-sm btn-danger" (click)="removeMember(user)">Remove</button>
+            </li>
+          } @empty {
+            <li class="empty">
+              <app-icon name="user-plus" [size]="26" />
+              <h3>Nobody in this team yet</h3>
+              <p>Add people with the menu above. They also need to exist on the People page.</p>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  }
+</div>
+
+<app-modal [open]="renaming()" title="Rename team" (closed)="renaming.set(false)">
+  <form class="form" (ngSubmit)="rename()" id="rename-form">
+    <div class="field">
+      <label for="rename">Name</label>
+      <input id="rename" class="input" name="name" [(ngModel)]="name" maxlength="255" required />
+    </div>
+  </form>
+  <div modal-footer>
+    <button type="button" class="btn" (click)="renaming.set(false)">Cancel</button>
+    <button type="submit" form="rename-form" class="btn btn-primary" [disabled]="!name.trim()">Save</button>
+  </div>
+</app-modal>

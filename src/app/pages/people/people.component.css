@@ -1,0 +1,46 @@
+.person {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.person div {
+  display: grid;
+  line-height: 1.35;
+}
+
+.name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.mail:hover {
+  color: var(--accent);
+}
+
+.teams {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.icon-btn.danger:hover {
+  background: var(--danger-soft);
+  color: var(--danger);
+}
+
+.error {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+@media (max-width: 620px) {
+  .page-header .row {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .page-header .search {
+    flex: 1;
+  }
+}

@@ -1,0 +1,74 @@
+<div class="page">
+  <header class="page-header">
+    <div>
+      <h1>Teams</h1>
+      <p>A team works on one project. Its members are the people tasks can be assigned to.</p>
+    </div>
+    <button type="button" class="btn btn-primary" (click)="openCreate()">
+      <app-icon name="plus" [size]="16" /> New team
+    </button>
+  </header>
+
+  @if (loading()) {
+    <div class="grid grid-cards">
+      @for (i of [1, 2, 3]; track i) {
+        <div class="skeleton" style="height: 170px"></div>
+      }
+    </div>
+  } @else {
+    <div class="grid grid-cards">
+      @for (team of teams(); track team.id) {
+        <a class="card team" [routerLink]="['/teams', team.id]">
+          <div class="row">
+            <span class="icon"><app-icon name="users" [size]="18" /></span>
+            <div class="title">
+              <h2>{{ team.name }}</h2>
+              <span class="faint small">{{ team.users.length }} member{{ team.users.length === 1 ? '' : 's' }}</span>
+            </div>
+          </div>
+
+          <div class="stack">
+            @for (user of team.users.slice(0, 6); track user.id) {
+              <app-avatar [name]="user.fullName" [size]="30" />
+            }
+            @if (team.users.length > 6) {
+              <span class="more">+{{ team.users.length - 6 }}</span>
+            }
+            @if (!team.users.length) {
+              <span class="faint small">No members yet</span>
+            }
+          </div>
+
+          <footer class="small">
+            @if (team.project; as project) {
+              <app-icon name="folder" [size]="14" />
+              <span>{{ project.name }}</span>
+            } @else {
+              <span class="chip">Free for a project</span>
+            }
+          </footer>
+        </a>
+      } @empty {
+        <div class="card empty full">
+          <app-icon name="users" [size]="28" />
+          <h3>No teams yet</h3>
+          <p>Create a team, add people to it, then give it a project.</p>
+          <button type="button" class="btn btn-primary btn-sm" (click)="openCreate()">New team</button>
+        </div>
+      }
+    </div>
+  }
+</div>
+
+<app-modal [open]="creating()" title="New team" (closed)="creating.set(false)">
+  <form class="form" (ngSubmit)="create()" id="team-form">
+    <div class="field">
+      <label for="team-name">Name</label>
+      <input id="team-name" class="input" name="name" [(ngModel)]="newName" placeholder="Mobile squad" maxlength="255" required />
+    </div>
+  </form>
+  <div modal-footer>
+    <button type="button" class="btn" (click)="creating.set(false)">Cancel</button>
+    <button type="submit" form="team-form" class="btn btn-primary" [disabled]="saving() || !newName.trim()">Create team</button>
+  </div>
+</app-modal>

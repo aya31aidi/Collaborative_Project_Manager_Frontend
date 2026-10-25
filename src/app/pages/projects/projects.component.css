@@ -1,0 +1,130 @@
+.project {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 18px 20px;
+}
+
+.project-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.initial {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.desc {
+  display: -webkit-box;
+  overflow: hidden;
+  min-height: 42px;
+  color: var(--muted);
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+.current {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-weight: 550;
+}
+
+.progress-block {
+  display: grid;
+  gap: 6px;
+  margin-top: auto;
+  padding-top: 4px;
+}
+
+footer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 12px;
+  border-top: 1px solid var(--border);
+}
+
+.stack {
+  display: flex;
+}
+
+.stack > * {
+  margin-left: -6px;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--surface);
+}
+
+.stack > *:first-child {
+  margin-left: 0;
+}
+
+.more {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  background: var(--surface-3);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.full {
+  grid-column: 1 / -1;
+}
+
+.people {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.person {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.person.on {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.person input {
+  accent-color: var(--accent);
+}
+
+.error {
+  color: var(--danger);
+  font-size: 12px;
+}
+
+@media (max-width: 620px) {
+  .page-header .row {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .page-header .search {
+    flex: 1;
+  }
+}
